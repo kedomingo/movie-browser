@@ -1,9 +1,32 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, getClientIdentifier } from "@/lib/rateLimit";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Rate limiting
+  const identifier = getClientIdentifier(request);
+  const limit = rateLimit(identifier);
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      {
+        error: "Too many requests",
+        message: "Rate limit exceeded. Please try again later.",
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil((limit.resetTime - Date.now()) / 1000)),
+          "X-RateLimit-Limit": "25",
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(limit.resetTime),
+        },
+      }
+    );
+  }
+
   if (!TMDB_API_KEY) {
     return NextResponse.json(
       { error: "TMDB API key is not configured" },
@@ -25,7 +48,13 @@ export async function GET() {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        "X-RateLimit-Limit": "25",
+        "X-RateLimit-Remaining": String(limit.remaining),
+        "X-RateLimit-Reset": String(limit.resetTime),
+      },
+    });
   } catch (error) {
     console.error("Error fetching movie genres:", error);
     return NextResponse.json(
