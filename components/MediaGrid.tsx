@@ -20,7 +20,7 @@ export default function MediaGrid({
 }: MediaGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[...Array(6)].map((_, i) => (
           <div key={i} className="flex flex-col gap-2">
             <div className="aspect-[2/3] w-full animate-pulse rounded-lg bg-gray-700" />
@@ -42,7 +42,7 @@ export default function MediaGrid({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5  gap-4">
         {items.map((item) => (
           <MovieCard key={item.id} item={item} />
         ))}
