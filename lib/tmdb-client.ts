@@ -65,7 +65,9 @@ function obfuscateIdsInObject(obj: any): any {
         typeof value === "number"
       ) {
         result[key] = obfuscateId(value);
-      } else {
+      } else if (key === "genres") { // RECURSIVELY OBFUSCATE EXCEPT GENRES
+        result[key] = value;
+      } else if (key !== "genres") { // RECURSIVELY OBFUSCATE EXCEPT GENRES
         result[key] = obfuscateIdsInObject(value);
       }
     }
@@ -244,7 +246,8 @@ export class TMDBClient {
       next: { revalidate: 86400 },
     });
     const data = await response.json();
-    return data; // Genres don't need ID obfuscation
+    return obfuscateIdsInObject(data);
+    // return data; // Genres don't need ID obfuscation
   }
 
   // Get TV genres
@@ -253,7 +256,8 @@ export class TMDBClient {
       next: { revalidate: 86400 },
     });
     const data = await response.json();
-    return data; // Genres don't need ID obfuscation
+    return obfuscateIdsInObject(data);
+    // return data; // Genres don't need ID obfuscation
   }
 }
 
