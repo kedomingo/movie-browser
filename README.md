@@ -4,6 +4,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 First, run the development server:
 
+copy `.env.local.sample` to `.env` and put your own TMDB API Key
+
 ```bash
 npm run dev
 # or
