@@ -133,9 +133,9 @@ export default async function MovieDetailsPage({
               <h2 className="mb-4 text-2xl font-bold text-white">Top 10 Cast</h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
                 {movie.credits.cast
-                  .filter((member) => member.known_for_department === "Acting")
+                  .filter((member:CastMember) => member.known_for_department === "Acting")
                   .slice(0, 10)
-                  .map((member) => (
+                  .map((member:CastMember) => (
                     <div
                       key={member.id}
                       className="flex flex-col items-center gap-2"
