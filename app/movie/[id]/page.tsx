@@ -3,6 +3,21 @@ import { getBackdropUrl } from "@/lib/tmdb";
 import GenreBadge from "@/components/GenreBadge";
 import MediaPlayer from "@/components/MediaPlayer";
 
+interface CastMember {
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string | null;
+  cast_id: number;
+  character: string;
+  credit_id: string;
+  order: number;
+}
+
 interface MovieDetails {
   id: number;
   original_title: string;
@@ -11,6 +26,9 @@ interface MovieDetails {
   genres: Array<{ id: number; name: string }>;
   release_date: string;
   vote_average: number;
+  credits?: {
+    cast: CastMember[];
+  };
 }
 
 async function getMovieDetails(encryptedId: string) {
@@ -108,6 +126,46 @@ export default async function MovieDetailsPage({
             mediaId={encryptedId}
             language={undefined}
           />
+
+          {/* Cast Section */}
+          {movie.credits?.cast && (
+            <div className="mt-8">
+              <h2 className="mb-4 text-2xl font-bold text-white">Top 10 Cast</h2>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+                {movie.credits.cast
+                  .filter((member) => member.known_for_department === "Acting")
+                  .slice(0, 10)
+                  .map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <div className="relative h-20 w-20 overflow-hidden rounded-full">
+                        {member.profile_path ? (
+                          <Image
+                            src={`https://image.tmdb.org/t/p/w185${member.profile_path}`}
+                            alt={member.name}
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-gray-700 text-gray-400">
+                            <span className="text-xs">No Photo</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-semibold text-white">
+                          {member.name}
+                        </p>
+                        <p className="text-xs text-gray-400">{member.character}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

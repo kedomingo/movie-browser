@@ -182,7 +182,7 @@ export class TMDBClient {
   // Get movie details
   async getMovieDetails(encryptedId: string) {
     const id = deobfuscateId(encryptedId);
-    const response = await makeRequest(`/movie/${id}`, {
+    const response = await makeRequest(`/movie/${id}?append_to_response=credits`, {
       next: { revalidate: 3600 },
     });
     const data = await response.json();
