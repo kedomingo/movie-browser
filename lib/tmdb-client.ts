@@ -65,9 +65,11 @@ function obfuscateIdsInObject(obj: any): any {
         typeof value === "number"
       ) {
         result[key] = obfuscateId(value);
-      } else if (key === "genres") { // RECURSIVELY OBFUSCATE EXCEPT GENRES
+      } else if (key === "genres") {
+        // RECURSIVELY OBFUSCATE EXCEPT GENRES
         result[key] = value;
-      } else if (key !== "genres") { // RECURSIVELY OBFUSCATE EXCEPT GENRES
+      } else if (key !== "genres") {
+        // RECURSIVELY OBFUSCATE EXCEPT GENRES
         result[key] = obfuscateIdsInObject(value);
       }
     }
@@ -79,7 +81,7 @@ function obfuscateIdsInObject(obj: any): any {
 // Make a request to TMDB API
 async function makeRequest(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<Response> {
   const url = `${TMDB_BASE_URL}${endpoint}`;
   const response = await fetch(url, {
@@ -101,12 +103,15 @@ async function makeRequest(
 // TMDB Client class
 export class TMDBClient {
   // Get trending movies
-  async getTrendingMovies(page: number = 1, timeWindow: "day" | "week" = "week") {
+  async getTrendingMovies(
+    page: number = 1,
+    timeWindow: "day" | "week" = "week",
+  ) {
     const response = await makeRequest(
       `/trending/movie/${timeWindow}?page=${page}`,
       {
         next: { revalidate: 3600 },
-      }
+      },
     );
     const data = await response.json();
     return obfuscateIdsInObject(data);
@@ -127,7 +132,7 @@ export class TMDBClient {
       `/search/movie?${searchParams.toString()}`,
       {
         next: { revalidate: 300 },
-      }
+      },
     );
     const data = await response.json();
     return obfuscateIdsInObject(data);
@@ -150,16 +155,15 @@ export class TMDBClient {
       searchParams.set("with_origin_country", params.with_origin_country);
     if (params.with_genres) searchParams.set("with_genres", params.with_genres);
     if (params["release_date.gte"])
-      searchParams.set("release_date.gte", params["release_date.gte"]);
+      searchParams.set("primary_release_date.gte", params["release_date.gte"]);
     if (params["release_date.lte"])
-      searchParams.set("release_date.lte", params["release_date.lte"]);
+      searchParams.set("primary_release_date.lte", params["release_date.lte"]);
 
-    const response = await makeRequest(
-      `/discover/movie?${searchParams.toString()}`,
-      {
-        next: { revalidate: 300 },
-      }
-    );
+    const endpoint = `/discover/movie?${searchParams.toString()}`;
+    console.log(endpoint);
+    const response = await makeRequest(endpoint, {
+      next: { revalidate: 300 },
+    });
     const data = await response.json();
     return obfuscateIdsInObject(data);
   }
@@ -185,9 +189,12 @@ export class TMDBClient {
     if (params.query) searchParams.set("query", params.query);
     if (params.language) searchParams.set("language", params.language);
 
-    const response = await makeRequest(`/search/tv?${searchParams.toString()}`, {
-      next: { revalidate: 300 },
-    });
+    const response = await makeRequest(
+      `/search/tv?${searchParams.toString()}`,
+      {
+        next: { revalidate: 300 },
+      },
+    );
     const data = await response.json();
     return obfuscateIdsInObject(data);
   }
@@ -213,9 +220,12 @@ export class TMDBClient {
     if (params["first_air_date.lte"])
       searchParams.set("first_air_date.lte", params["first_air_date.lte"]);
 
-    const response = await makeRequest(`/discover/tv?${searchParams.toString()}`, {
-      next: { revalidate: 300 },
-    });
+    const response = await makeRequest(
+      `/discover/tv?${searchParams.toString()}`,
+      {
+        next: { revalidate: 300 },
+      },
+    );
     const data = await response.json();
     return obfuscateIdsInObject(data);
   }
@@ -263,4 +273,3 @@ export class TMDBClient {
 
 // Export a singleton instance
 export const tmdbClient = new TMDBClient();
-

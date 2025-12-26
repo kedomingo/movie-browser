@@ -10,7 +10,7 @@ let tvGenresCache: Genre[] | null = null;
 
 export async function getMovieGenres(): Promise<Genre[]> {
   if (movieGenresCache) {
-    return movieGenresCache;
+    // return movieGenresCache;
   }
 
   const response = await fetch("/api/genres/movies");

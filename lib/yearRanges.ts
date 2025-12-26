@@ -2,6 +2,8 @@ export function getYearRange(yearFilter: string): { gte?: string; lte?: string }
   switch (yearFilter) {
     case "2020s":
       return { gte: "2020-01-01", lte: "2029-12-31" };
+    case "2010s":
+      return { gte: "2010-01-01", lte: "2019-12-31" };
     case "2000s":
       return { gte: "2000-01-01", lte: "2009-12-31" };
     case "1990s":
