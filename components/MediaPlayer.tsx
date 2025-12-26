@@ -92,42 +92,6 @@ export default function MediaPlayer({
 
   return (
     <div className="mt-8 flex flex-col gap-4">
-      {/* Provider Dropdown */}
-      <div>
-        <label
-          htmlFor="provider"
-          className="mb-2 block text-sm font-medium text-gray-300"
-        >
-          Select Provider
-        </label>
-        <select
-          id="provider"
-          value={selectedProvider}
-          onChange={(e) => {
-            if (e.target.value) {
-              handleProviderChange(e.target.value as MediaProvider);
-            } else {
-              setSelectedProvider("");
-              setEmbedUrl(null);
-              setError(null);
-            }
-          }}
-          disabled={!canShowPlayer || isLoading}
-          className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <option value="">
-            {!canShowPlayer
-              ? "Select season and episode first"
-              : "Choose a provider..."}
-          </option>
-          {providers.map((provider) => (
-            <option key={provider} value={provider}>
-              {provider.charAt(0).toUpperCase() + provider.slice(1)}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-600 bg-gray-800/50 p-12">
@@ -161,6 +125,45 @@ export default function MediaPlayer({
           <p className="text-gray-400">Select a provider to watch media</p>
         </div>
       )}
+
+        {/* Provider Dropdown */}
+        <div>
+            <label
+                htmlFor="provider"
+                className="mb-2 block text-sm font-medium text-gray-300"
+            >
+                Video not working? Choose a Provider that works:
+            </label>
+            <select
+                id="provider"
+                value={selectedProvider}
+                onChange={(e) => {
+                    if (e.target.value) {
+                        handleProviderChange(e.target.value as MediaProvider);
+                    } else {
+                        setSelectedProvider("");
+                        setEmbedUrl(null);
+                        setError(null);
+                    }
+                }}
+                disabled={!canShowPlayer || isLoading}
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <option value="">
+                    {!canShowPlayer
+                        ? "Select season and episode first"
+                        : "Choose a provider..."}
+                </option>
+                {providers.map((provider) => (
+                    <option key={provider} value={provider}>
+                        {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                    </option>
+                ))}
+            </select>
+        </div>
+
+        Disclaimer: Pop-up ads are triggered by these providers. To improve your experience,
+        use Firefox and install the Ublock Origin firefox addon
     </div>
   );
 }

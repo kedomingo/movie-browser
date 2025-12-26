@@ -11,7 +11,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.push("/")}
-            className="text-2xl font-bold text-white hover:text-blue-400 transition-colors"
+            className="text-2xl font-bold text-white hover:text-blue-400 transition-colors cursor-pointer"
           >
             Pira Movies & TV
           </button>
