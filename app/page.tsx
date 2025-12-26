@@ -26,6 +26,7 @@ export default function Home() {
     country?: string;
     genre?: string;
     year?: string;
+    sort?: string;
   }>({kind: "movie"});
 
   // Initialize from URL params
@@ -36,6 +37,7 @@ export default function Home() {
         const country = searchParams.get("country") || undefined;
         const genre = searchParams.get("genre") || undefined;
         const year = searchParams.get("year") || undefined;
+        const sort = searchParams.get("sort") || undefined;
         const page = parseInt(searchParams.get("page") || "1", 10);
 
         const filters = {
@@ -45,10 +47,11 @@ export default function Home() {
           country,
           genre,
           year,
+          sort,
         };
 
         // Check if we have any search filters
-        const hasFilters = query || kind || language || country || genre || year;
+        const hasFilters = query || kind || language || country || genre || year || sort;
 
     if (hasFilters) {
       setViewMode("search");
@@ -86,6 +89,7 @@ export default function Home() {
     if (filters.country) params.set("country", filters.country);
     if (filters.genre) params.set("genre", filters.genre);
     if (filters.year) params.set("year", filters.year);
+    if (filters.sort) params.set("sort", filters.sort);
     if (page > 1) params.set("page", page.toString());
 
     const newUrl = params.toString() ? `/?${params.toString()}` : "/";

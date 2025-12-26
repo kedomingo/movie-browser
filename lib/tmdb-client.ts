@@ -146,7 +146,10 @@ export class TMDBClient {
     with_genres?: string;
     "release_date.gte"?: string;
     "release_date.lte"?: string;
+    sort_by?: string;
   }) {
+    console.log(params)
+
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", params.page.toString());
     if (params.with_original_language)
@@ -158,6 +161,14 @@ export class TMDBClient {
       searchParams.set("primary_release_date.gte", params["release_date.gte"]);
     if (params["release_date.lte"])
       searchParams.set("primary_release_date.lte", params["release_date.lte"]);
+    if (params.sort_by) {
+      searchParams.set("sort_by", params.sort_by);
+      // Highly rated => huge vote count and high average
+      // because we don't want huge vote count of low rating
+      if (params.sort_by === "vote_count.desc") {
+        searchParams.set("vote_average.gte", "6");
+      }
+    }
 
     const endpoint = `/discover/movie?${searchParams.toString()}`;
     console.log(endpoint);
@@ -207,6 +218,7 @@ export class TMDBClient {
     with_genres?: string;
     "first_air_date.gte"?: string;
     "first_air_date.lte"?: string;
+    sort_by?: string;
   }) {
     const searchParams = new URLSearchParams();
     if (params.page) searchParams.set("page", params.page.toString());
@@ -219,6 +231,7 @@ export class TMDBClient {
       searchParams.set("first_air_date.gte", params["first_air_date.gte"]);
     if (params["first_air_date.lte"])
       searchParams.set("first_air_date.lte", params["first_air_date.lte"]);
+    if (params.sort_by) searchParams.set("sort_by", params.sort_by);
 
     const response = await makeRequest(
       `/discover/tv?${searchParams.toString()}`,

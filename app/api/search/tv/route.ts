@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
   const country = searchParams.get("country");
   const genre = searchParams.get("genre");
   const year = searchParams.get("year");
+  const sort = searchParams.get("sort");
 
   try {
     let data;
@@ -71,6 +72,11 @@ export async function GET(request: NextRequest) {
         if (yearRange.lte) {
           discoverParams["first_air_date.lte"] = yearRange.lte;
         }
+      }
+
+      // Handle sort filter
+      if (sort) {
+        discoverParams.sort_by = sort;
       }
 
       data = await tmdbClient.discoverTVShows(discoverParams);

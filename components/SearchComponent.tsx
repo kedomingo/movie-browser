@@ -13,6 +13,7 @@ interface SearchComponentProps {
     country?: string;
     genre?: string;
     year?: string;
+    sort?: string;
   }) => void;
   onReset: () => void;
   initialFilters?: {
@@ -22,6 +23,7 @@ interface SearchComponentProps {
     country?: string;
     genre?: string;
     year?: string;
+    sort?: string;
   };
 }
 
@@ -45,6 +47,7 @@ export default function SearchComponent({
   const [country, setCountry] = useState<string>(initialFilters.country || "");
   const [genre, setGenre] = useState<string>(initialFilters.genre || "");
   const [year, setYear] = useState<string>(initialFilters.year || "");
+  const [sort, setSort] = useState<string>(initialFilters.sort || "");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [movieGenres, setMovieGenres] = useState<Genre[]>([]);
   const [tvGenres, setTVGenres] = useState<Genre[]>([]);
@@ -76,13 +79,15 @@ export default function SearchComponent({
     setCountry(initialFilters.country || "");
     setGenre(initialFilters.genre || "");
     setYear(initialFilters.year || "");
+    setSort(initialFilters.sort || "");
     // Show advanced if any advanced filter is set
     if (
       !searchQuery &&
       (initialFilters.language ||
         initialFilters.country ||
         initialFilters.year ||
-        initialFilters?.genre)
+        initialFilters?.genre ||
+        initialFilters?.sort)
     ) {
       setShowAdvanced(true);
     }
@@ -96,6 +101,7 @@ export default function SearchComponent({
       country: country || undefined,
       genre: genre || undefined,
       year: year || undefined,
+      sort: sort || undefined,
     });
   };
 
@@ -106,6 +112,7 @@ export default function SearchComponent({
     setCountry("");
     setGenre("");
     setYear("");
+    setSort("");
     setShowAdvanced(false);
     onReset();
   };
@@ -300,6 +307,26 @@ export default function SearchComponent({
                     {country.name}
                   </option>
                 ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="sort"
+                className="text-sm font-medium text-gray-300"
+              >
+                Sort
+              </label>
+              <select
+                id="sort"
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Default</option>
+                <option value="popularity.desc">Most Popular</option>
+                <option value="vote_count.desc">Highly Rated</option>
+                <option value="revenue.desc">Highest Revenue</option>
               </select>
             </div>
           </>
