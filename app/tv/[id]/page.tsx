@@ -5,16 +5,21 @@ import Image from "next/image";
 import { getBackdropUrl } from "@/lib/tmdb";
 import GenreBadge from "@/components/GenreBadge";
 import MediaPlayer from "@/components/MediaPlayer";
+import WatchLaterButton from "@/components/WatchLaterButton";
+import { MediaItem } from "@/types/tmdb";
 
 interface TVDetails {
   id: number;
   name: string;
   original_name?: string;
   overview: string;
+  poster_path?: string | null;
   backdrop_path: string | null;
   genres: Array<{ id: number; name: string }>;
   first_air_date: string;
   vote_average: number;
+  vote_count?: number;
+  original_language?: string;
   seasons: Array<{
     id: number;
     season_number: number;
@@ -209,10 +214,30 @@ export default function TVDetailsPage({
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6">
-          {/* Title */}
-          <h1 className="text-4xl font-bold text-white sm:text-5xl md:text-6xl">
-            {displayName}
-          </h1>
+          {/* Title with Watch Later button */}
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="flex-1 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
+              {displayName}
+            </h1>
+            {tvShow && (
+              <div className="flex-shrink-0">
+                <WatchLaterButton
+                  item={{
+                    id: tvShow.id,
+                    name: tvShow.name,
+                    poster_path: tvShow.poster_path || tvShow.backdrop_path,
+                    backdrop_path: tvShow.backdrop_path,
+                    overview: tvShow.overview,
+                    first_air_date: tvShow.first_air_date,
+                    vote_average: tvShow.vote_average,
+                    vote_count: tvShow.vote_count || 0,
+                    media_type: "tv",
+                    original_language: tvShow.original_language || "",
+                  } as MediaItem}
+                />
+              </div>
+            )}
+          </div>
 
           {/* Details */}
           <div className="flex flex-col gap-4">

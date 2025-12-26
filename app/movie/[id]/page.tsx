@@ -2,6 +2,7 @@ import Image from "next/image";
 import { getBackdropUrl } from "@/lib/tmdb";
 import GenreBadge from "@/components/GenreBadge";
 import MediaPlayer from "@/components/MediaPlayer";
+import MovieTitleWithWatchLater from "@/components/MovieTitleWithWatchLater";
 
 interface CastMember {
   adult: boolean;
@@ -22,6 +23,7 @@ interface MovieDetails {
   id: number;
   original_title: string;
   overview: string;
+  poster_path?: string | null;
   backdrop_path: string | null;
   genres: Array<{ id: number; name: string }>;
   release_date: string;
@@ -80,10 +82,8 @@ export default async function MovieDetailsPage({
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6">
-          {/* Title */}
-          <h1 className="text-4xl font-bold text-white sm:text-5xl md:text-6xl">
-            {movie.original_title}
-          </h1>
+          {/* Title with Watch Later button */}
+          <MovieTitleWithWatchLater title={movie.original_title} movie={movie} />
 
           {/* Details */}
           <div className="flex flex-col gap-4">

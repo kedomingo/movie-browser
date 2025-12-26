@@ -7,8 +7,9 @@ import MediaGrid from "@/components/MediaGrid";
 import MobileTip from "@/components/MobileTip";
 import { MediaItem, TMDBResponse } from "@/types/tmdb";
 import { fetchTrendingMovies, searchMovies, searchTVShows } from "@/lib/tmdb";
+import { getWatchList, WatchListItem } from "@/lib/watchList";
 
-type ViewMode = "trending" | "search";
+type ViewMode = "trending" | "search" | "watchlist";
 
 export default function Home() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>("trending");
   const [trendingMovies, setTrendingMovies] = useState<MediaItem[]>([]);
   const [searchResults, setSearchResults] = useState<MediaItem[]>([]);
+  const [watchListItems, setWatchListItems] = useState<MediaItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -184,14 +186,62 @@ export default function Home() {
     loadTrendingMovies(1);
   };
 
-  const currentItems = viewMode === "trending" ? trendingMovies : searchResults;
+  // Handle watch list view
+  const handleWatchList = () => {
+    const items = getWatchList();
+    // Convert WatchListItem[] to MediaItem[]
+    const mediaItems: MediaItem[] = items.map((item) => {
+      const { addedAt, ...mediaItem } = item;
+      return mediaItem;
+    });
+    setWatchListItems(mediaItems);
+    setViewMode("watchlist");
+    setCurrentPage(1);
+    setTotalPages(1);
+  };
+
+  // Reload watch list when it might have changed (e.g., after adding/removing)
+  useEffect(() => {
+    if (viewMode === "watchlist") {
+      const items = getWatchList();
+      const mediaItems: MediaItem[] = items.map((item) => {
+        const { addedAt, ...mediaItem } = item;
+        return mediaItem;
+      });
+      setWatchListItems(mediaItems);
+    }
+  }, [viewMode]);
+
+  const currentItems =
+    viewMode === "trending"
+      ? trendingMovies
+      : viewMode === "watchlist"
+        ? watchListItems
+        : searchResults;
   const handlePageChange =
-    viewMode === "trending" ? handleTrendingPageChange : handleSearchPageChange;
+    viewMode === "trending"
+      ? handleTrendingPageChange
+      : viewMode === "watchlist"
+        ? () => {} // Watch list doesn't need pagination
+        : handleSearchPageChange;
 
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <MobileTip />
+
+        <div className="mb-4">
+          <button
+            onClick={handleWatchList}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              viewMode === "watchlist"
+                ? "bg-green-600 text-white hover:bg-green-700"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900`}
+          >
+            My Watch List
+          </button>
+        </div>
 
         <div className="mb-6">
           <SearchComponent
@@ -208,13 +258,18 @@ export default function Home() {
           {viewMode === "search" && (
             <h2 className="mb-4 text-xl font-semibold text-gray-200">Search Results</h2>
           )}
+          {viewMode === "watchlist" && (
+            <h2 className="mb-4 text-xl font-semibold text-gray-200">
+              My Watch List ({watchListItems.length} {watchListItems.length === 1 ? "item" : "items"})
+            </h2>
+          )}
 
           <MediaGrid
             items={currentItems}
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            isLoading={isLoading}
+            isLoading={viewMode === "watchlist" ? false : isLoading}
           />
         </div>
       </div>
