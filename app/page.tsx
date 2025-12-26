@@ -1,65 +1,216 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import SearchComponent from "@/components/SearchComponent";
+import MediaGrid from "@/components/MediaGrid";
+import { MediaItem, TMDBResponse } from "@/types/tmdb";
+import { fetchTrendingMovies, searchMovies, searchTVShows } from "@/lib/tmdb";
+
+type ViewMode = "trending" | "search";
 
 export default function Home() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [viewMode, setViewMode] = useState<ViewMode>("trending");
+  const [trendingMovies, setTrendingMovies] = useState<MediaItem[]>([]);
+  const [searchResults, setSearchResults] = useState<MediaItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchFilters, setSearchFilters] = useState<{
+    query?: string;
+    kind?: "movie" | "tv";
+    language?: string;
+    country?: string;
+    genre?: string;
+  }>({});
+
+  // Initialize from URL params
+  useEffect(() => {
+    const query = searchParams.get("query") || undefined;
+    const kind = (searchParams.get("kind") as "movie" | "tv") || undefined;
+    const language = searchParams.get("language") || undefined;
+    const country = searchParams.get("country") || undefined;
+    const genre = searchParams.get("genre") || undefined;
+    const page = parseInt(searchParams.get("page") || "1", 10);
+
+    const filters = {
+      query,
+      kind,
+      language,
+      country,
+      genre,
+    };
+
+    // Check if we have any search filters
+    const hasFilters = query || kind || language || country || genre;
+
+    if (hasFilters) {
+      setViewMode("search");
+      setSearchFilters(filters);
+      setCurrentPage(page);
+      // Trigger search
+      performSearch(filters, page);
+    } else {
+      setViewMode("trending");
+      setCurrentPage(page);
+      loadTrendingMovies(page);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const loadTrendingMovies = async (page: number = 1) => {
+    setIsLoading(true);
+    try {
+      const data: TMDBResponse<MediaItem> = await fetchTrendingMovies(page);
+      setTrendingMovies(data.results);
+      setTotalPages(data.total_pages);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Error fetching trending movies:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateURL = (filters: typeof searchFilters, page: number = 1) => {
+    const params = new URLSearchParams();
+    if (filters.query) params.set("query", filters.query);
+    if (filters.kind) params.set("kind", filters.kind);
+    if (filters.language) params.set("language", filters.language);
+    if (filters.country) params.set("country", filters.country);
+    if (filters.genre) params.set("genre", filters.genre);
+    if (page > 1) params.set("page", page.toString());
+
+    const newUrl = params.toString() ? `/?${params.toString()}` : "/";
+    router.push(newUrl, { scroll: false });
+  };
+
+  // Handle pagination for trending movies
+  const handleTrendingPageChange = async (page: number) => {
+    updateURL({}, page);
+    await loadTrendingMovies(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const performSearch = async (
+    filters: typeof searchFilters,
+    page: number = 1
+  ) => {
+    setIsLoading(true);
+    try {
+      let moviesData: TMDBResponse<MediaItem> | null = null;
+      let tvData: TMDBResponse<MediaItem> | null = null;
+
+      // If kind is specified, only search that type
+      if (filters.kind === "movie") {
+        moviesData = await searchMovies({ ...filters, page });
+      } else if (filters.kind === "tv") {
+        tvData = await searchTVShows({ ...filters, page });
+      } else {
+        // Search both if no kind specified
+        [moviesData, tvData] = await Promise.all([
+          searchMovies({ ...filters, page }),
+          searchTVShows({ ...filters, page }),
+        ]);
+      }
+
+      // Combine results
+      const combinedResults: MediaItem[] = [];
+      if (moviesData) {
+        combinedResults.push(
+          ...moviesData.results.map((item: MediaItem) => ({
+            ...item,
+            media_type: "movie" as const,
+          }))
+        );
+      }
+      if (tvData) {
+        combinedResults.push(
+          ...tvData.results.map((item: MediaItem) => ({
+            ...item,
+            media_type: "tv" as const,
+          }))
+        );
+      }
+
+      setSearchResults(combinedResults);
+      // Use the maximum total pages from both results
+      const maxPages = Math.max(
+        moviesData?.total_pages || 0,
+        tvData?.total_pages || 0
+      );
+      setTotalPages(maxPages);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Error searching:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle search
+  const handleSearch = async (filters: typeof searchFilters) => {
+    setViewMode("search");
+    setSearchFilters(filters);
+    updateURL(filters, 1);
+    await performSearch(filters, 1);
+  };
+
+  // Handle pagination for search results
+  const handleSearchPageChange = async (page: number) => {
+    updateURL(searchFilters, page);
+    await performSearch(searchFilters, page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Handle reset
+  const handleReset = () => {
+    router.push("/");
+    setViewMode("trending");
+    setSearchResults([]);
+    setSearchFilters({});
+    setCurrentPage(1);
+    loadTrendingMovies(1);
+  };
+
+  const currentItems = viewMode === "trending" ? trendingMovies : searchResults;
+  const handlePageChange =
+    viewMode === "trending" ? handleTrendingPageChange : handleSearchPageChange;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gray-900">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold text-white">TMDB Movies & TV</h1>
+        </header>
+
+        <div className="mb-6">
+          <SearchComponent
+            onSearch={handleSearch}
+            onReset={handleReset}
+            initialFilters={searchFilters}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div>
+          {viewMode === "trending" && (
+            <h2 className="mb-4 text-xl font-semibold text-gray-200">Trending Movies</h2>
+          )}
+          {viewMode === "search" && (
+            <h2 className="mb-4 text-xl font-semibold text-gray-200">Search Results</h2>
+          )}
+
+          <MediaGrid
+            items={currentItems}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            isLoading={isLoading}
+          />
         </div>
-      </main>
+      </div>
     </div>
   );
 }
