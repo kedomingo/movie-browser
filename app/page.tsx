@@ -192,7 +192,7 @@ export default function Home() {
     // Convert WatchListItem[] to MediaItem[]
     const mediaItems: MediaItem[] = items.map((item) => {
       const { addedAt, ...mediaItem } = item;
-      return mediaItem;
+      return mediaItem as MediaItem;
     });
     setWatchListItems(mediaItems);
     setViewMode("watchlist");
@@ -206,7 +206,7 @@ export default function Home() {
       const items = getWatchList();
       const mediaItems: MediaItem[] = items.map((item) => {
         const { addedAt, ...mediaItem } = item;
-        return mediaItem;
+        return mediaItem as MediaItem;
       });
       setWatchListItems(mediaItems);
     }

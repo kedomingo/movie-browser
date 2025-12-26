@@ -4,9 +4,9 @@ import { MediaItem } from "@/types/tmdb";
 
 const WATCH_LIST_KEY = "tmdb-watch-list";
 
-export interface WatchListItem extends MediaItem {
+export type WatchListItem = MediaItem & {
   addedAt: number; // Timestamp when item was added
-}
+};
 
 /**
  * Get all items from the watch list
