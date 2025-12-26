@@ -26,7 +26,7 @@ export default function Home() {
     country?: string;
     genre?: string;
     year?: string;
-  }>({});
+  }>({kind: "movie"});
 
   // Initialize from URL params
   useEffect(() => {

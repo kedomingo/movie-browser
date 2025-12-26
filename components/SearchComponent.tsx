@@ -34,7 +34,7 @@ export default function SearchComponent({
     initialFilters.query || "",
   );
   const [kind, setKind] = useState<"movie" | "tv" | "">(
-    initialFilters.kind || "",
+    initialFilters.kind || "movie",
   );
   const [language, setLanguage] = useState<string>(
     initialFilters.language || "",
