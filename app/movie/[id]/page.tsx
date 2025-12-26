@@ -25,7 +25,11 @@ interface MovieDetails {
   backdrop_path: string | null;
   genres: Array<{ id: number; name: string }>;
   release_date: string;
+  budget: number;
+  revenue: number;
+  original_language: string;
   vote_average: number;
+  vote_count: number;
   credits?: {
     cast: CastMember[];
   };
@@ -109,15 +113,44 @@ export default async function MovieDetailsPage({
               {movie.release_date && (
                 <div>
                   <span className="font-semibold">Release Date: </span>
-                  <span>{new Date(movie.release_date).toLocaleDateString()}</span>
+                  <span>
+                    {new Date(movie.release_date).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {movie.budget > 0 && (
+                <div>
+                  <span className="font-semibold">Budget: </span>
+                  <span>
+                    ${new Intl.NumberFormat("en-US").format(movie.budget)}
+                  </span>
+                </div>
+              )}
+              {movie.revenue > 0 && (
+                <div>
+                  <span className="font-semibold">Revenue: </span>
+                  <span>
+                    ${new Intl.NumberFormat("en-US").format(movie.revenue)}
+                  </span>
+                </div>
+              )}
+              {movie.original_language && (
+                <div>
+                  <span className="font-semibold">
+                    {movie.original_language}
+                  </span>
                 </div>
               )}
               <div className="flex items-center gap-1">
                 <span className="font-semibold">Rating: </span>
                 <span className="text-yellow-400">★</span>
-                <span>{movie.vote_average.toFixed(1)}</span>
+                <span>{movie.vote_average.toFixed(1)} ({movie.vote_count})</span>
               </div>
             </div>
+
+            {((movie.vote_average >= 6 && movie.vote_count >= 100) || (movie.revenue > movie.budget * 2)) && <>Potential: Likely good</>}
+            {((movie.vote_average < 5 || movie.vote_count < 100) || (movie.revenue < movie.budget * 2)) && <>Potential: Likely bad</>}
+
           </div>
 
           {/* Media Player */}
@@ -130,36 +163,45 @@ export default async function MovieDetailsPage({
           {/* Cast Section */}
           {movie.credits?.cast && (
             <div className="mt-8">
-              <h2 className="mb-4 text-2xl font-bold text-white">Top 10 Cast</h2>
+              <h2 className="mb-4 text-2xl font-bold text-white">
+                Top 10 Cast
+              </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
                 {movie.credits.cast
-                  .filter((member:CastMember) => member.known_for_department === "Acting")
+                  .filter(
+                    (member: CastMember) =>
+                      member.known_for_department === "Acting",
+                  )
                   .slice(0, 10)
-                  .map((member:CastMember) => (
+                  .map((member: CastMember) => (
                     <div
                       key={member.id}
                       className="flex flex-col items-center gap-2"
                     >
-                      <div className="relative h-20 w-20 overflow-hidden rounded-full">
-                        {member.profile_path ? (
-                          <Image
-                            src={`https://image.tmdb.org/t/p/w185${member.profile_path}`}
-                            alt={member.name}
-                            fill
-                            className="object-cover"
-                            sizes="64px"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-gray-700 text-gray-400">
-                            <span className="text-xs">No Photo</span>
-                          </div>
-                        )}
-                      </div>
+                      <a target="_blank" href={`https://www.google.com/search?udm=2&q=${encodeURIComponent(member.name)}`}>
+                        <div className="relative h-20 w-20 overflow-hidden rounded-full">
+                          {member.profile_path ? (
+                            <Image
+                              src={`https://image.tmdb.org/t/p/w185${member.profile_path}`}
+                              alt={member.name}
+                              fill
+                              className="object-cover"
+                              sizes="64px"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-gray-700 text-gray-400">
+                              <span className="text-xs">No Photo</span>
+                            </div>
+                          )}
+                        </div>
+                      </a>
                       <div className="text-center">
                         <p className="text-sm font-semibold text-white">
                           {member.name}
                         </p>
-                        <p className="text-xs text-gray-400">{member.character}</p>
+                        <p className="text-xs text-gray-400">
+                          {member.character}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -171,4 +213,3 @@ export default async function MovieDetailsPage({
     </div>
   );
 }
-

@@ -8,6 +8,7 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
   media_type?: "movie" | "tv";
+  original_language: string;
 }
 
 export interface TVShow {
@@ -20,6 +21,7 @@ export interface TVShow {
   vote_average: number;
   vote_count: number;
   media_type?: "movie" | "tv";
+  original_language: string;
 }
 
 export type MediaItem = Movie | TVShow;

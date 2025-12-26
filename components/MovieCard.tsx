@@ -39,7 +39,7 @@ export default function MovieCard({ item }: MovieCardProps) {
           {title}
         </h3>
         <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-400">{year}</p>
+          <p className="text-xs text-gray-400">{year} ({item.original_language})</p>
           <div className="flex items-center gap-1">
             <span className="text-xs text-yellow-400">★</span>
             <span className="text-xs text-gray-300">{voteAverage}</span>
