@@ -83,7 +83,10 @@ export default async function MovieDetailsPage({
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6">
           {/* Title with Watch Later button */}
-          <MovieTitleWithWatchLater title={movie.original_title} movie={movie} />
+          <MovieTitleWithWatchLater
+            title={movie.original_title}
+            movie={movie}
+          />
 
           {/* Details */}
           <div className="flex flex-col gap-4">
@@ -144,13 +147,31 @@ export default async function MovieDetailsPage({
               <div className="flex items-center gap-1">
                 <span className="font-semibold">Rating: </span>
                 <span className="text-yellow-400">★</span>
-                <span>{movie.vote_average.toFixed(1)} ({movie.vote_count})</span>
+                <span>
+                  {movie.vote_average.toFixed(1)} ({movie.vote_count})
+                </span>
               </div>
             </div>
 
-            {((movie.vote_average >= 6 && movie.vote_count >= 100) || (movie.revenue > movie.budget * 2)) && <>Potential: Likely good</>}
-            {((movie.vote_average < 5 || movie.vote_count < 100) || (movie.revenue < movie.budget * 2)) && <>Potential: Likely bad</>}
+            <div className="flex gap-4">
+              {(movie.vote_average >= 6.5 &&
+                movie.vote_count >= 200 &&
+                movie.revenue > movie.budget * 3) ||
+              movie.revenue > movie.budget * 4 ? (
+                <>Likely Excellent</>
+              ) : (movie.vote_average >= 6 && movie.vote_count >= 100) ||
+                movie.revenue > movie.budget * 2 ? (
+                <>Potential: Likely good</>
+              ) : movie.vote_average < 5 ||
+                movie.vote_count < 100 ||
+                movie.revenue < movie.budget * 2 ? (
+                <>Potential: Likely bad</>
+              ) : (
+                <></>
+              )}
 
+              <a target="_blank" className="underline" href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.original_title)}`}>Rotten tomatoes</a>
+            </div>
           </div>
 
           {/* Media Player */}
@@ -178,7 +199,10 @@ export default async function MovieDetailsPage({
                       key={member.id}
                       className="flex flex-col items-center gap-2"
                     >
-                      <a target="_blank" href={`https://www.google.com/search?udm=2&q=${encodeURIComponent(member.name)}`}>
+                      <a
+                        target="_blank"
+                        href={`https://www.google.com/search?udm=2&q=${encodeURIComponent(member.name)}`}
+                      >
                         <div className="relative h-20 w-20 overflow-hidden rounded-full">
                           {member.profile_path ? (
                             <Image

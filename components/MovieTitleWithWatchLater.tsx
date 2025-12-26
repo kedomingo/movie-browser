@@ -37,7 +37,7 @@ export default function MovieTitleWithWatchLater({
   };
 
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex flex-col items-start justify-between gap-4">
       <h1 className="flex-1 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
         {title}
       </h1>

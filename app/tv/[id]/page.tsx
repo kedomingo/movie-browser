@@ -215,7 +215,7 @@ export default function TVDetailsPage({
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6">
           {/* Title with Watch Later button */}
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col items-start justify-between gap-4">
             <h1 className="flex-1 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
               {displayName}
             </h1>
