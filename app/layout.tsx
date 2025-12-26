@@ -38,11 +38,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/*<script*/}
-        {/*  src="https://cdn.jsdelivr.net/npm/disable-devtool@latest"*/}
-        {/*  disable-devtool-auto*/}
-        {/*  suppressHydrationWarning*/}
-        {/*/>*/}
+        <script
+          src="https://cdn.jsdelivr.net/npm/disable-devtool@latest"
+          disable-devtool-auto
+          suppressHydrationWarning
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
