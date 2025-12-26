@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
   const language = searchParams.get("language");
   const country = searchParams.get("country");
   const genre = searchParams.get("genre");
+  const year = searchParams.get("year");
 
   try {
     // If there's a query, use the search endpoint
@@ -93,6 +94,18 @@ export async function GET(request: NextRequest) {
 
     if (genre) {
       params.append("with_genres", genre);
+    }
+
+    // Handle year filter
+    if (year) {
+      const { getYearRange } = await import("@/lib/yearRanges");
+      const yearRange = getYearRange(year);
+      if (yearRange.gte) {
+        params.append("release_date.gte", yearRange.gte);
+      }
+      if (yearRange.lte) {
+        params.append("release_date.lte", yearRange.lte);
+      }
     }
 
     const response = await fetch(

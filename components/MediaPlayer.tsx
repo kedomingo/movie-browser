@@ -41,7 +41,22 @@ export default function MediaPlayer({
     setEmbedUrl(null);
     setError(null);
     setSelectedProvider("");
-  }, [mediaId, seasonId, episodeId]);
+
+    // Auto-select vidsrcxyz provider after reset
+    const canAutoLoad =
+      mediaType === "movie" ||
+      (seasonId !== undefined && episodeId !== undefined);
+
+    if (canAutoLoad && providers.includes("vidsrcxyz")) {
+      // Use setTimeout to ensure state reset completes first
+      const timer = setTimeout(() => {
+        handleProviderChange("vidsrcxyz");
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mediaId, seasonId, episodeId, mediaType]);
 
   const handleProviderChange = async (provider: MediaProvider) => {
     setSelectedProvider(provider);

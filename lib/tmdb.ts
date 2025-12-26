@@ -35,6 +35,7 @@ export const searchMovies = async (filters: {
   language?: string;
   country?: string;
   genre?: string;
+  year?: string;
   page?: number;
 }) => {
   const params = new URLSearchParams({
@@ -55,6 +56,10 @@ export const searchMovies = async (filters: {
 
   if (filters.genre) {
     params.append("genre", filters.genre);
+  }
+
+  if (filters.year) {
+    params.append("year", filters.year);
   }
 
   const response = await fetch(
@@ -76,6 +81,7 @@ export const searchTVShows = async (filters: {
   language?: string;
   country?: string;
   genre?: string;
+  year?: string;
   page?: number;
 }) => {
   const params = new URLSearchParams({
@@ -96,6 +102,10 @@ export const searchTVShows = async (filters: {
 
   if (filters.genre) {
     params.append("genre", filters.genre);
+  }
+
+  if (filters.year) {
+    params.append("year", filters.year);
   }
 
   const response = await fetch(

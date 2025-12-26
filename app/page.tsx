@@ -25,27 +25,30 @@ export default function Home() {
     language?: string;
     country?: string;
     genre?: string;
+    year?: string;
   }>({});
 
   // Initialize from URL params
   useEffect(() => {
-    const query = searchParams.get("query") || undefined;
-    const kind = (searchParams.get("kind") as "movie" | "tv") || undefined;
-    const language = searchParams.get("language") || undefined;
-    const country = searchParams.get("country") || undefined;
-    const genre = searchParams.get("genre") || undefined;
-    const page = parseInt(searchParams.get("page") || "1", 10);
+        const query = searchParams.get("query") || undefined;
+        const kind = (searchParams.get("kind") as "movie" | "tv") || undefined;
+        const language = searchParams.get("language") || undefined;
+        const country = searchParams.get("country") || undefined;
+        const genre = searchParams.get("genre") || undefined;
+        const year = searchParams.get("year") || undefined;
+        const page = parseInt(searchParams.get("page") || "1", 10);
 
-    const filters = {
-      query,
-      kind,
-      language,
-      country,
-      genre,
-    };
+        const filters = {
+          query,
+          kind,
+          language,
+          country,
+          genre,
+          year,
+        };
 
-    // Check if we have any search filters
-    const hasFilters = query || kind || language || country || genre;
+        // Check if we have any search filters
+        const hasFilters = query || kind || language || country || genre || year;
 
     if (hasFilters) {
       setViewMode("search");
@@ -82,6 +85,7 @@ export default function Home() {
     if (filters.language) params.set("language", filters.language);
     if (filters.country) params.set("country", filters.country);
     if (filters.genre) params.set("genre", filters.genre);
+    if (filters.year) params.set("year", filters.year);
     if (page > 1) params.set("page", page.toString());
 
     const newUrl = params.toString() ? `/?${params.toString()}` : "/";
