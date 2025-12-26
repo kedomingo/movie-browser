@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import SearchComponent from "@/components/SearchComponent";
 import MediaGrid from "@/components/MediaGrid";
+import MobileTip from "@/components/MobileTip";
 import { MediaItem, TMDBResponse } from "@/types/tmdb";
 import { fetchTrendingMovies, searchMovies, searchTVShows } from "@/lib/tmdb";
 
@@ -182,9 +183,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <header className="mb-6">
-          <h1 className="text-2xl font-bold text-white">TMDB Movies & TV</h1>
-        </header>
+        <MobileTip />
 
         <div className="mb-6">
           <SearchComponent

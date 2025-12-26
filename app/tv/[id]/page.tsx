@@ -27,6 +27,8 @@ interface Episode {
   id: number;
   episode_number: number;
   name: string;
+  overview?: string;
+  air_date?: string;
 }
 
 async function getTVDetails(id: string): Promise<TVDetails> {
@@ -320,6 +322,34 @@ export default function TVDetailsPage({
             episodeId={selectedEpisode || undefined}
             mediaName={displayName}
           />
+
+          {/* Episode Details */}
+          {selectedEpisode !== null &&
+            episodes.length > 0 &&
+            (() => {
+              const selectedEpisodeData = episodes.find(
+                (ep) => ep.episode_number === selectedEpisode
+              );
+              return selectedEpisodeData ? (
+                <div className="mt-6 flex flex-col gap-3 rounded-lg bg-gray-800/50 p-4">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <h3 className="text-lg font-semibold text-white">
+                      Episode {selectedEpisodeData.episode_number}: {selectedEpisodeData.name}
+                    </h3>
+                    {selectedEpisodeData.air_date && (
+                      <p className="text-sm text-gray-400">
+                        Aired: {new Date(selectedEpisodeData.air_date).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  {selectedEpisodeData.overview && (
+                    <p className="text-gray-300 leading-relaxed">
+                      {selectedEpisodeData.overview}
+                    </p>
+                  )}
+                </div>
+              ) : null;
+            })()}
         </div>
       </div>
     </div>

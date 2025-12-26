@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import InstallButton from "@/components/InstallButton";
+import Header from "@/components/Header";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TMDB Movies & TV",
-  description: "Discover movies and TV shows using TMDB API",
+  title: "Pira Movies",
+  description: "Watch movies and TV shows",
   manifest: "/manifest.webmanifest",
 };
 
@@ -38,10 +39,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Header />
         <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center"><p className="text-gray-400">Loading...</p></div>}>
           {children}
         </Suspense>
         <InstallButton />
+        <div className="flex items-center justify-center w-full p-16">
+            Pira Movies
+        </div>
       </body>
     </html>
   );

@@ -2,9 +2,9 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "TMDB Movie & TV App",
-    short_name: "TMDB",
-    description: "Discover movies and TV shows using TMDB API",
+    name: "Pira Movies",
+    short_name: "Pira",
+    description: "Watch movies and TV shows",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

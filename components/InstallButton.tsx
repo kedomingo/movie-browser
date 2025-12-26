@@ -6,15 +6,29 @@ export default function InstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if app is already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    // Check if app is already installed (standalone mode)
+    const standaloneCheck = window.matchMedia("(display-mode: standalone)").matches;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    
+    setIsIOS(isIOSDevice);
+    setIsStandalone(standaloneCheck);
+
+    if (standaloneCheck) {
       setIsInstalled(true);
       return;
     }
 
-    // Listen for the beforeinstallprompt event
+    // For iOS, show manual install instructions
+    if (isIOSDevice) {
+      setIsInstallable(true);
+      return;
+    }
+
+    // Listen for the beforeinstallprompt event (Android/Chrome)
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
@@ -40,6 +54,15 @@ export default function InstallButton() {
   }, []);
 
   const handleInstallClick = async () => {
+    // iOS devices need manual installation
+    if (isIOS) {
+      // Show instructions for iOS
+      alert(
+        "To install this app on iOS:\n\n1. Tap the Share button (square with arrow)\n2. Scroll down and tap 'Add to Home Screen'\n3. Tap 'Add' in the top right"
+      );
+      return;
+    }
+
     if (!deferredPrompt) {
       return;
     }
@@ -59,8 +82,13 @@ export default function InstallButton() {
     setIsInstallable(false);
   };
 
-  // Don't show button if already installed or not installable
-  if (isInstalled || !isInstallable) {
+  // Don't show button if already installed
+  if (isInstalled || isStandalone) {
+    return null;
+  }
+
+  // Show button if installable (Android) or iOS
+  if (!isInstallable) {
     return null;
   }
 
@@ -82,7 +110,7 @@ export default function InstallButton() {
           clipRule="evenodd"
         />
       </svg>
-      <span>Install App</span>
+      <span>{isIOS ? "Install" : "Install App"}</span>
     </button>
   );
 }
