@@ -28,14 +28,26 @@ export type MediaProvider =
   | "filmxy"
   | "cinescrape";
 
-export const MOVIE_PROVIDERS: MediaProvider[] = [
-  "vidsrc",
+export const OK_PROVIDERS: Set<MediaProvider> = new Set([
     "vidsrcxyz",
+    "vidsrc",
     "vidlink",
     "vidsrcicu",
     "autoembed",
     "2embed",
     "smashystream",
+    "multiembed",
+])
+
+export const MOVIE_PROVIDERS: MediaProvider[] = [
+    "vidsrcxyz",
+    "vidsrc",
+    "vidlink",
+    "vidsrcicu",
+    "autoembed",
+    "2embed",
+    "smashystream",
+    "multiembed",
   "vidsrc2",
   "flicky",
   "embedsoap",
@@ -49,7 +61,6 @@ export const MOVIE_PROVIDERS: MediaProvider[] = [
   "vidbinge",
   "moviesapi",
   "moviee",
-  "multiembed",
   "embedsu",
   "multiembedvip",
   "filmxy",
@@ -57,21 +68,21 @@ export const MOVIE_PROVIDERS: MediaProvider[] = [
 ];
 
 export const TV_PROVIDERS: MediaProvider[] = [
-  "vidsrc",
     "vidsrcxyz",
+    "vidsrc",
     "vidlink",
-    "autoembed",
     "vidsrcicu",
-  "vidsrcpro",
+    "autoembed",
+    "2embed",
+    "smashystream",
+    "multiembed",
   "flicky",
   "flickyanime",
   "embedsoap",
-  "smashystream",
   "anime",
   "nontonGo",
   "nontonGoAlt",
   "2animesub",
-  "2embed",
   "AdminHiHi",
   "moviesapi",
   "vidlinkdub",
@@ -79,7 +90,6 @@ export const TV_PROVIDERS: MediaProvider[] = [
   "vidsrc.rip",
   "vidbinge",
   "moviee",
-  "multiembed",
   "multiembedvip",
   "embedsu",
   "cinescrape",

@@ -148,19 +148,34 @@ export default function TVDetailsPage({
             (e) => e.episode_number === selectedEpisode
           );
           if (!episode) {
-            // Episode not found in this season, clear selection
-            setSelectedEpisode(null);
+            // Episode not found in this season, auto-select first episode
+            if (episodeData.length > 0) {
+              const firstEpisode = episodeData[0].episode_number;
+              setSelectedEpisode(firstEpisode);
+              saveEpisode(tvId, selectedSeason, firstEpisode);
+            } else {
+              setSelectedEpisode(null);
+            }
+          }
+        } else {
+          // No episode selected, auto-select first episode
+          if (episodeData.length > 0) {
+            const firstEpisode = episodeData[0].episode_number;
+            setSelectedEpisode(firstEpisode);
+            saveEpisode(tvId, selectedSeason, firstEpisode);
           }
         }
       } catch (error) {
         console.error("Error loading episodes:", error);
+        setEpisodes([]);
+        setSelectedEpisode(null);
       } finally {
         setIsLoadingEpisodes(false);
       }
     }
 
     loadEpisodes();
-  }, [tvShow, selectedSeason, tvId, selectedEpisode]);
+  }, [tvShow, selectedSeason, tvId]);
 
   if (isLoading || !tvShow) {
     return (
@@ -255,14 +270,8 @@ export default function TVDetailsPage({
                     const seasonNumber = Number(e.target.value);
                     setSelectedSeason(seasonNumber);
                     // Clear episode selection when season changes
+                    // The loadEpisodes useEffect will auto-select the first episode
                     setSelectedEpisode(null);
-                    // If we have a saved episode for this season, restore it
-                    if (tvId) {
-                      const saved = loadSavedEpisode(tvId);
-                      if (saved && saved.seasonNumber === seasonNumber) {
-                        setSelectedEpisode(saved.episodeNumber);
-                      }
-                    }
                   }}
                   className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >

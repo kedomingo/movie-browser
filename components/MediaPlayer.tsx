@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import {
-  MediaProvider,
-  MOVIE_PROVIDERS,
-  TV_PROVIDERS,
+    MediaProvider,
+    MOVIE_PROVIDERS, OK_PROVIDERS,
+    TV_PROVIDERS,
 } from "@/lib/mediaplayer";
 
 interface MediaPlayerProps {
@@ -176,6 +176,7 @@ export default function MediaPlayer({
                 {providers.map((provider) => (
                     <option key={provider} value={provider}>
                         {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                        {OK_PROVIDERS.has(provider) ? ' (Usually good)' : ''}
                     </option>
                 ))}
             </select>
