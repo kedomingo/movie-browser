@@ -12,6 +12,7 @@ This project includes Docker configuration to run the application in containers 
 1. Make sure you have a `.env.local` file with your TMDB API key:
    ```
    TMDB_API_KEY=your_api_key_here
+   ID_SECRET=...
    ```
 
 2. Build and start the containers:

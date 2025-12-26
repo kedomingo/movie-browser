@@ -5,8 +5,6 @@ import {
   MediaProvider,
   MOVIE_PROVIDERS,
   TV_PROVIDERS,
-  getMovieEmbedUrl,
-  getTvEmbedUrl,
 } from "@/lib/mediaplayer";
 
 interface MediaPlayerProps {
@@ -65,16 +63,37 @@ export default function MediaPlayer({
     setEmbedUrl(null);
 
     try {
-      let url: string;
-      if (mediaType === "movie") {
-        url = await getMovieEmbedUrl(mediaId, provider, language);
-      } else {
+      // Build query parameters
+      const params = new URLSearchParams({
+        type: mediaType,
+        id: mediaId,
+        provider: provider,
+      });
+
+      if (language) {
+        params.append("language", language);
+      }
+
+      if (mediaType === "tv") {
         if (seasonId === undefined || episodeId === undefined) {
           throw new Error("Season and episode are required for TV shows");
         }
-        url = await getTvEmbedUrl(mediaId, seasonId, episodeId, provider, mediaName);
+        params.append("seasonId", seasonId.toString());
+        params.append("episodeId", episodeId.toString());
+        if (mediaName) {
+          params.append("mediaName", mediaName);
+        }
       }
-      setEmbedUrl(url);
+
+      // Call the API endpoint which handles deobfuscation
+      const response = await fetch(`/api/media/embed?${params.toString()}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to load media player");
+      }
+
+      const data = await response.json();
+      setEmbedUrl(data.embedUrl);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load media player"

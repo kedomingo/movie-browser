@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { getBackdropUrl } from "@/lib/tmdb";
-import { getMovieDetails } from "@/lib/tmdb-server";
 import GenreBadge from "@/components/GenreBadge";
 import MediaPlayer from "@/components/MediaPlayer";
 
@@ -14,15 +13,28 @@ interface MovieDetails {
   vote_average: number;
 }
 
+async function getMovieDetails(encryptedId: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const response = await fetch(`${baseUrl}/api/movies/${encryptedId}`, {
+    next: { revalidate: 3600 },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch movie details");
+  }
+
+  return response.json();
+}
+
 export default async function MovieDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id: idWithSlug } = await params;
-  // Extract just the numeric ID (before the first hyphen)
-  const id = idWithSlug.split("-")[0];
-  const movie = await getMovieDetails(id);
+  // Extract the encrypted ID (before the first hyphen)
+  const encryptedId = idWithSlug.split("-")[0];
+  const movie = await getMovieDetails(encryptedId);
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -93,7 +105,7 @@ export default async function MovieDetailsPage({
           {/* Media Player */}
           <MediaPlayer
             mediaType="movie"
-            mediaId={id}
+            mediaId={encryptedId}
             language={undefined}
           />
         </div>

@@ -1,5 +1,5 @@
 export interface Movie {
-  id: number;
+  id: number | string; // Can be number (from TMDB) or string (obfuscated)
   title: string;
   poster_path: string | null;
   backdrop_path: string | null;
@@ -11,7 +11,7 @@ export interface Movie {
 }
 
 export interface TVShow {
-  id: number;
+  id: number | string; // Can be number (from TMDB) or string (obfuscated)
   name: string;
   poster_path: string | null;
   backdrop_path: string | null;

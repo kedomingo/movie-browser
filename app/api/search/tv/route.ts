@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, getClientIdentifier } from "@/lib/rateLimit";
-
-const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+import { tmdbClient } from "@/lib/tmdb-client";
+import { getYearRange } from "@/lib/yearRanges";
 
 export async function GET(request: NextRequest) {
   // Rate limiting
@@ -27,15 +26,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  if (!TMDB_API_KEY) {
-    return NextResponse.json(
-      { error: "TMDB API key is not configured" },
-      { status: 500 }
-    );
-  }
-
   const searchParams = request.nextUrl.searchParams;
-  const page = searchParams.get("page") || "1";
+  const page = parseInt(searchParams.get("page") || "1", 10);
   const query = searchParams.get("query");
   const language = searchParams.get("language");
   const country = searchParams.get("country");
@@ -43,87 +35,47 @@ export async function GET(request: NextRequest) {
   const year = searchParams.get("year");
 
   try {
+    let data;
+
     // If there's a query, use the search endpoint
     if (query) {
-      const params = new URLSearchParams({
-        page,
+      data = await tmdbClient.searchTVShows({
         query,
+        language: language || undefined,
+        page,
       });
+    } else {
+      // Otherwise, use the discover endpoint for filtering
+      const discoverParams: any = {
+        page,
+      };
 
       if (language) {
-        params.append("language", language);
+        discoverParams.with_original_language = language;
       }
 
-      const response = await fetch(
-        `${TMDB_BASE_URL}/search/tv?${params.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${TMDB_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          next: { revalidate: 300 }, // Revalidate every 5 minutes
+      if (country) {
+        discoverParams.with_origin_country = country;
+      }
+
+      if (genre) {
+        discoverParams.with_genres = genre;
+      }
+
+      // Handle year filter (for TV, use first_air_date)
+      if (year) {
+        const yearRange = getYearRange(year);
+        if (yearRange.gte) {
+          discoverParams["first_air_date.gte"] = yearRange.gte;
         }
-      );
-
-      if (!response.ok) {
-        throw new Error(`TMDB API error: ${response.status}`);
+        if (yearRange.lte) {
+          discoverParams["first_air_date.lte"] = yearRange.lte;
+        }
       }
 
-      const data = await response.json();
-      return NextResponse.json(data, {
-        headers: {
-          "X-RateLimit-Limit": "25",
-          "X-RateLimit-Remaining": String(limit.remaining),
-          "X-RateLimit-Reset": String(limit.resetTime),
-        },
-      });
+      data = await tmdbClient.discoverTVShows(discoverParams);
     }
 
-    // Otherwise, use the discover endpoint for filtering
-    const params = new URLSearchParams({
-      page,
-    });
-
-    if (language) {
-      params.append("with_original_language", language);
-    }
-
-    if (country) {
-      params.append("with_origin_country", country);
-    }
-
-    if (genre) {
-      params.append("with_genres", genre);
-    }
-
-    // Handle year filter (for TV, use first_air_date)
-    if (year) {
-      const { getYearRange } = await import("@/lib/yearRanges");
-      const yearRange = getYearRange(year);
-      if (yearRange.gte) {
-        params.append("first_air_date.gte", yearRange.gte);
-      }
-      if (yearRange.lte) {
-        params.append("first_air_date.lte", yearRange.lte);
-      }
-    }
-
-    const response = await fetch(
-      `${TMDB_BASE_URL}/discover/tv?${params.toString()}`,
-      {
-        headers: {
-          Authorization: `Bearer ${TMDB_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`TMDB API error: ${response.status}`);
-    }
-
-    const data = await response.json();
     return NextResponse.json(data, {
       headers: {
         "X-RateLimit-Limit": "25",

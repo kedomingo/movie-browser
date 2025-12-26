@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
+import Script from "next/script";
 import InstallButton from "@/components/InstallButton";
 import Header from "@/components/Header";
 import "./globals.css";
@@ -36,6 +37,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          src="https://cdn.jsdelivr.net/npm/disable-devtool@latest"
+          disable-devtool-auto
+          suppressHydrationWarning
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -47,6 +55,7 @@ export default function RootLayout({
         <div className="flex items-center justify-center w-full p-16">
             Pira Movies
         </div>
+
       </body>
     </html>
   );

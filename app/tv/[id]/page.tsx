@@ -31,8 +31,8 @@ interface Episode {
   air_date?: string;
 }
 
-async function getTVDetails(id: string): Promise<TVDetails> {
-  const response = await fetch(`/api/tv/${id}`, {
+async function getTVDetails(encryptedId: string): Promise<TVDetails> {
+  const response = await fetch(`/api/tv/${encryptedId}`, {
     next: { revalidate: 3600 },
   });
 
@@ -44,10 +44,10 @@ async function getTVDetails(id: string): Promise<TVDetails> {
 }
 
 async function getSeasonEpisodes(
-  id: string,
+  encryptedId: string,
   seasonNumber: number
 ): Promise<Episode[]> {
-  const response = await fetch(`/api/tv/${id}/season/${seasonNumber}`, {
+  const response = await fetch(`/api/tv/${encryptedId}/season/${seasonNumber}`, {
     next: { revalidate: 3600 },
   });
 
@@ -102,14 +102,14 @@ export default function TVDetailsPage({
     async function loadTVDetails() {
       try {
         const { id: idWithSlug } = await params;
-        // Extract just the numeric ID (before the first hyphen)
-        const id = idWithSlug.split("-")[0];
-        setTvId(id);
-        const data = await getTVDetails(id);
+        // Extract the encrypted ID (before the first hyphen)
+        const encryptedId = idWithSlug.split("-")[0];
+        setTvId(encryptedId);
+        const data = await getTVDetails(encryptedId);
         setTVShow(data);
 
         // Try to load saved episode
-        const saved = loadSavedEpisode(id);
+        const saved = loadSavedEpisode(encryptedId);
         if (saved && data.seasons) {
           const season = data.seasons.find(
             (s) => s.season_number === saved.seasonNumber

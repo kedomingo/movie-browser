@@ -4,7 +4,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 First, run the development server:
 
-copy `.env.local.sample` to `.env` and put your own TMDB API Key
+copy `.env.local.sample` to `.env` and put your own TMDB API Key and any random secret
 
 ```bash
 npm run dev

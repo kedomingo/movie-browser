@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, getClientIdentifier } from "@/lib/rateLimit";
-
-const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+import { tmdbClient } from "@/lib/tmdb-client";
 
 export async function GET(
   request: NextRequest,
@@ -30,32 +28,13 @@ export async function GET(
     );
   }
 
-  if (!TMDB_API_KEY) {
-    return NextResponse.json(
-      { error: "TMDB API key is not configured" },
-      { status: 500 }
-    );
-  }
-
   const { id, seasonNumber } = await params;
+  // Extract the encrypted ID from the slug (format: encryptedId-slug)
+  const encryptedId = id.split("-")[0];
+  const seasonNum = parseInt(seasonNumber, 10);
 
   try {
-    const response = await fetch(
-      `${TMDB_BASE_URL}/tv/${id}/season/${seasonNumber}`,
-      {
-        headers: {
-          Authorization: `Bearer ${TMDB_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        next: { revalidate: 3600 }, // Revalidate every hour
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`TMDB API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await tmdbClient.getTVSeasonDetails(encryptedId, seasonNum);
     return NextResponse.json(data, {
       headers: {
         "X-RateLimit-Limit": "25",
