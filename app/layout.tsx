@@ -57,7 +57,7 @@ export default function RootLayout({
         >
           {children}
         </Suspense>
-        <div className="flex flex-col items-center justify-center w-full p-16 gap-4">
+        <div className="relative z-20 flex flex-col items-center justify-center w-full p-16 gap-4">
           <p>PiraTV Watch Movies and TV - All content is provided by external third-party providers</p>
 
           <a
