@@ -375,8 +375,8 @@ export default function TVDetailsPage({
             <MediaPlayer
               mediaType="tv"
               mediaId={tvId || ""}
-              seasonId={selectedSeason || undefined}
-              episodeId={selectedEpisode || undefined}
+              seasonId={selectedSeason === null ? undefined : selectedSeason}
+              episodeId={selectedEpisode === null ? undefined : selectedEpisode}
               mediaName={displayName}
             />
 
