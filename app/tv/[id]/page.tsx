@@ -52,11 +52,14 @@ async function getTVDetails(encryptedId: string): Promise<TVDetails> {
 
 async function getSeasonEpisodes(
   encryptedId: string,
-  seasonNumber: number
+  seasonNumber: number,
 ): Promise<Episode[]> {
-  const response = await fetch(`/api/tv/${encryptedId}/season/${seasonNumber}`, {
-    next: { revalidate: 3600 },
-  });
+  const response = await fetch(
+    `/api/tv/${encryptedId}/season/${seasonNumber}`,
+    {
+      next: { revalidate: 3600 },
+    },
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch season episodes");
@@ -94,11 +97,15 @@ export default function TVDetailsPage({
   };
 
   // Save episode to localStorage
-  const saveEpisode = (id: string, seasonNumber: number, episodeNumber: number) => {
+  const saveEpisode = (
+    id: string,
+    seasonNumber: number,
+    episodeNumber: number,
+  ) => {
     try {
       localStorage.setItem(
         `tv-${id}-last-watched`,
-        JSON.stringify({ seasonNumber, episodeNumber })
+        JSON.stringify({ seasonNumber, episodeNumber }),
       );
     } catch (error) {
       console.error("Error saving episode:", error);
@@ -119,7 +126,7 @@ export default function TVDetailsPage({
         const saved = loadSavedEpisode(encryptedId);
         if (saved && data.seasons) {
           const season = data.seasons.find(
-            (s) => s.season_number === saved.seasonNumber
+            (s) => s.season_number === saved.seasonNumber,
           );
           if (season) {
             setSelectedSeason(saved.seasonNumber);
@@ -152,7 +159,7 @@ export default function TVDetailsPage({
         // If we have a saved episode and it's in this season, select it
         if (selectedEpisode !== null) {
           const episode = episodeData.find(
-            (e) => e.episode_number === selectedEpisode
+            (e) => e.episode_number === selectedEpisode,
           );
           if (!episode) {
             // Episode not found in this season, auto-select first episode
@@ -217,25 +224,32 @@ export default function TVDetailsPage({
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6">
           {/* Title with Watch Later button */}
-          <div className="flex flex-col items-start justify-between gap-4">
-            <h1 className="flex-1 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
-              {displayName}
-            </h1>
+          <div className="flex flex-col items-start justify-between gap-3">
+            <div>
+              <h1 className="flex-1 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
+                {displayName}
+              </h1>
+              {tvShow.original_name && tvShow.original_name !== null && (
+                <h3>{tvShow.original_name}</h3>
+              )}
+            </div>
             {tvShow && (
               <div className="flex-shrink-0">
                 <WatchLaterButton
-                  item={{
-                    id: tvShow.id,
-                    name: tvShow.name,
-                    poster_path: tvShow.poster_path || tvShow.backdrop_path,
-                    backdrop_path: tvShow.backdrop_path,
-                    overview: tvShow.overview,
-                    first_air_date: tvShow.first_air_date,
-                    vote_average: tvShow.vote_average,
-                    vote_count: tvShow.vote_count || 0,
-                    media_type: "tv",
-                    original_language: tvShow.original_language || "",
-                  } as MediaItem}
+                  item={
+                    {
+                      id: tvShow.id,
+                      name: tvShow.name,
+                      poster_path: tvShow.poster_path || tvShow.backdrop_path,
+                      backdrop_path: tvShow.backdrop_path,
+                      overview: tvShow.overview,
+                      first_air_date: tvShow.first_air_date,
+                      vote_average: tvShow.vote_average,
+                      vote_count: tvShow.vote_count || 0,
+                      media_type: "tv",
+                      original_language: tvShow.original_language || "",
+                    } as MediaItem
+                  }
                 />
               </div>
             )}
@@ -273,7 +287,9 @@ export default function TVDetailsPage({
               {tvShow.first_air_date && (
                 <div>
                   <span className="font-semibold">First Air Date: </span>
-                  <span>{new Date(tvShow.first_air_date).toLocaleDateString()}</span>
+                  <span>
+                    {new Date(tvShow.first_air_date).toLocaleDateString()}
+                  </span>
                 </div>
               )}
               <div className="flex items-center gap-1">
@@ -341,10 +357,7 @@ export default function TVDetailsPage({
                     <option>No episodes available</option>
                   ) : (
                     episodes.map((episode) => (
-                      <option
-                        key={episode.id}
-                        value={episode.episode_number}
-                      >
+                      <option key={episode.id} value={episode.episode_number}>
                         Episode {episode.episode_number}: {episode.name}
                       </option>
                     ))
@@ -368,17 +381,21 @@ export default function TVDetailsPage({
             episodes.length > 0 &&
             (() => {
               const selectedEpisodeData = episodes.find(
-                (ep) => ep.episode_number === selectedEpisode
+                (ep) => ep.episode_number === selectedEpisode,
               );
               return selectedEpisodeData ? (
                 <div className="mt-6 flex flex-col gap-3 rounded-lg bg-gray-800/50 p-4">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <h3 className="text-lg font-semibold text-white">
-                      Episode {selectedEpisodeData.episode_number}: {selectedEpisodeData.name}
+                      Episode {selectedEpisodeData.episode_number}:{" "}
+                      {selectedEpisodeData.name}
                     </h3>
                     {selectedEpisodeData.air_date && (
                       <p className="text-sm text-gray-400">
-                        Aired: {new Date(selectedEpisodeData.air_date).toLocaleDateString()}
+                        Aired:{" "}
+                        {new Date(
+                          selectedEpisodeData.air_date,
+                        ).toLocaleDateString()}
                       </p>
                     )}
                   </div>
@@ -404,4 +421,3 @@ export default function TVDetailsPage({
     </div>
   );
 }
-
