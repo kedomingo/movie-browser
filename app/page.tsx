@@ -322,16 +322,11 @@ export default function Home() {
               <MediaGrid
                 items={watchListItems}
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={1}
                 onPageChange={handlePageChange}
                 isLoading={false}
               />
             </div>
-            {/*{viewMode !== "watchlist" && (*/}
-            {/*)}*/}
-
-            {/*{viewMode === "watchlist" && (*/}
-            {/*)}*/}
           </div>
         </div>
       </div>
