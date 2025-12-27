@@ -47,7 +47,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
         <Suspense
           fallback={
             <div className="min-h-screen bg-gray-900 flex items-center justify-center">

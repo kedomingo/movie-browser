@@ -1,5 +1,6 @@
 "use client";
 
+import Header from "@/components/Header";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import SearchComponent from "@/components/SearchComponent";
@@ -29,31 +30,32 @@ export default function Home() {
     genre?: string;
     year?: string;
     sort?: string;
-  }>({kind: "movie"});
+  }>({ kind: "movie" });
 
   // Initialize from URL params
   useEffect(() => {
-        const query = searchParams.get("query") || undefined;
-        const kind = (searchParams.get("kind") as "movie" | "tv") || undefined;
-        const language = searchParams.get("language") || undefined;
-        const country = searchParams.get("country") || undefined;
-        const genre = searchParams.get("genre") || undefined;
-        const year = searchParams.get("year") || undefined;
-        const sort = searchParams.get("sort") || undefined;
-        const page = parseInt(searchParams.get("page") || "1", 10);
+    const query = searchParams.get("query") || undefined;
+    const kind = (searchParams.get("kind") as "movie" | "tv") || undefined;
+    const language = searchParams.get("language") || undefined;
+    const country = searchParams.get("country") || undefined;
+    const genre = searchParams.get("genre") || undefined;
+    const year = searchParams.get("year") || undefined;
+    const sort = searchParams.get("sort") || undefined;
+    const page = parseInt(searchParams.get("page") || "1", 10);
 
-        const filters = {
-          query,
-          kind,
-          language,
-          country,
-          genre,
-          year,
-          sort,
-        };
+    const filters = {
+      query,
+      kind,
+      language,
+      country,
+      genre,
+      year,
+      sort,
+    };
 
-        // Check if we have any search filters
-        const hasFilters = query || kind || language || country || genre || year || sort;
+    // Check if we have any search filters
+    const hasFilters =
+      query || kind || language || country || genre || year || sort;
 
     if (hasFilters) {
       setViewMode("search");
@@ -107,7 +109,7 @@ export default function Home() {
 
   const performSearch = async (
     filters: typeof searchFilters,
-    page: number = 1
+    page: number = 1,
   ) => {
     setIsLoading(true);
     try {
@@ -134,7 +136,7 @@ export default function Home() {
           ...moviesData.results.map((item: MediaItem) => ({
             ...item,
             media_type: "movie" as const,
-          }))
+          })),
         );
       }
       if (tvData) {
@@ -142,7 +144,7 @@ export default function Home() {
           ...tvData.results.map((item: MediaItem) => ({
             ...item,
             media_type: "tv" as const,
-          }))
+          })),
         );
       }
 
@@ -150,7 +152,7 @@ export default function Home() {
       // Use the maximum total pages from both results
       const maxPages = Math.max(
         moviesData?.total_pages || 0,
-        tvData?.total_pages || 0
+        tvData?.total_pages || 0,
       );
       setTotalPages(maxPages);
       setCurrentPage(page);
@@ -225,54 +227,79 @@ export default function Home() {
         ? () => {} // Watch list doesn't need pagination
         : handleSearchPageChange;
 
+  const [oldViewMode, setOldViewMode] = useState<ViewMode>(viewMode);
+  const [isSearch, setSearch] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gray-900">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <MobileTip />
+    <>
+      <Header
+        onClickWatchList={() => {
+          // Toggle old
+          if (viewMode === "watchlist") {
+            setViewMode(oldViewMode);
+          } else {
+            setOldViewMode(viewMode);
+            setViewMode("watchlist");
+          }
+        }}
+        onClickSearch={() => setSearch(!isSearch)}
+      />
+      <div className="min-h-screen bg-gray-900">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <MobileTip />
 
-        <div className="mb-4">
-          <button
-            onClick={handleWatchList}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              viewMode === "watchlist"
-                ? "bg-green-600 text-white hover:bg-green-700"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900`}
-          >
-            My Watch List
-          </button>
-        </div>
+          {/*<div className="mb-4">*/}
+          {/*  <button*/}
+          {/*    onClick={handleWatchList}*/}
+          {/*    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${*/}
+          {/*      viewMode === "watchlist"*/}
+          {/*        ? "bg-green-600 text-white hover:bg-green-700"*/}
+          {/*        : "bg-gray-700 text-gray-300 hover:bg-gray-600"*/}
+          {/*    } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900`}*/}
+          {/*  >*/}
+          {/*    My Watch List*/}
+          {/*  </button>*/}
+          {/*</div>*/}
 
-        <div className="mb-6">
-          <SearchComponent
-            onSearch={handleSearch}
-            onReset={handleReset}
-            initialFilters={searchFilters}
-          />
-        </div>
-
-        <div>
-          {viewMode === "trending" && (
-            <h2 className="mb-4 text-xl font-semibold text-gray-200">Trending Movies</h2>
+          {isSearch && (
+            <div className="mb-6">
+              <SearchComponent
+                onSearch={handleSearch}
+                onReset={handleReset}
+                initialFilters={searchFilters}
+              />
+            </div>
           )}
-          {viewMode === "search" && (
-            <h2 className="mb-4 text-xl font-semibold text-gray-200">Search Results</h2>
-          )}
-          {viewMode === "watchlist" && (
-            <h2 className="mb-4 text-xl font-semibold text-gray-200">
-              My Watch List ({watchListItems.length} {watchListItems.length === 1 ? "item" : "items"})
-            </h2>
-          )}
 
-          <MediaGrid
-            items={currentItems}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            isLoading={viewMode === "watchlist" ? false : isLoading}
-          />
+          <div>
+            {viewMode === "trending" && (
+              <h2 className="mb-4 text-xl font-semibold text-gray-200">
+                Trending movies this week
+              </h2>
+            )}
+            {viewMode === "search" && (
+              <h2 className="mb-4 text-xl font-semibold text-gray-200">
+                Search Results - {searchFilters.kind === "tv" ? "TV shows" : "Movies"}
+                {(searchFilters.query ?? '') !== '' ? ` with title "${searchFilters.query}" ` : ''}
+              </h2>
+            )}
+            {viewMode === "watchlist" && (
+              <h2 className="mb-4 text-xl font-semibold text-gray-200">
+                My Watch List ({watchListItems.length}{" "}
+                {watchListItems.length === 1 ? "item" : "items"})
+              </h2>
+            )}
+
+            <MediaGrid
+              items={currentItems}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              isLoading={viewMode === "watchlist" ? false : isLoading}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
           messages: [
             {
               role: "user",
-              content: `Recommend ${kind === "tv" ? "15 TV shows" : "10 Movies"} similar to ${query}. Prioritize thematic similarity before genre. Format output as title,year released with one show per line - nothing else!`,
+              content: `Recommend ${kind === "tv" ? "15 TV shows" : "13 Movies"} similar to ${query}. Prioritize thematic similarity before genre. Format output as title,year released with one show per line - nothing else!`,
             },
           ],
           ...(model === "gpt-4.1-mini" ? {} : { temperature: 0.7 }),
