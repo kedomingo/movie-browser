@@ -303,7 +303,7 @@ export default function Home() {
 
             <div
               className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                viewMode !== "watchlist" ? "opacity-100 relative" : "opacity-0 absolute"
+                viewMode !== "watchlist" ? "opacity-100 relative" : "opacity-0 h-0 absolute"
               }`}
             >
               <MediaGrid
@@ -316,7 +316,7 @@ export default function Home() {
             </div>
             <div
               className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                viewMode === "watchlist" ? "opacity-100 relative" : "opacity-0 absolute"
+                viewMode === "watchlist" ? "opacity-100 relative" : "opacity-0 h-0 absolute"
               }`}
             >
               <MediaGrid
