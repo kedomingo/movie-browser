@@ -48,14 +48,29 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header />
-        <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center"><p className="text-gray-400">Loading...</p></div>}>
+        <Suspense
+          fallback={
+            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+              <p className="text-gray-400">Loading...</p>
+            </div>
+          }
+        >
           {children}
         </Suspense>
-        <InstallButton />
-        <div className="flex items-center justify-center w-full p-16">
-            PiraTV Watch Movies and TV
-        </div>
+        <div className="flex flex-col items-center justify-center w-full p-16 gap-4">
+          <p>PiraTV Watch Movies and TV - All content is provided by external third-party providers</p>
 
+          <a
+            href="https://ko-fi.com/pppira"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
+          >
+            <img src="/coffee.png" width="24" />
+            <span>Buy me a coffee</span>
+          </a>
+        </div>
+        <InstallButton />
       </body>
     </html>
   );
