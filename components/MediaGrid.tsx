@@ -9,6 +9,7 @@ interface MediaGridProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   isLoading?: boolean;
+  kind?: "movie" | "tv";
 }
 
 export default function MediaGrid({
@@ -17,11 +18,12 @@ export default function MediaGrid({
   totalPages,
   onPageChange,
   isLoading = false,
+  kind,
 }: MediaGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[...Array(6)].map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {[...Array(10)].map((_, i) => (
           <div key={i} className="flex flex-col gap-2">
             <div className="aspect-[2/3] w-full animate-pulse rounded-lg bg-gray-700" />
             <div className="h-4 w-3/4 animate-pulse rounded bg-gray-700" />
@@ -44,7 +46,7 @@ export default function MediaGrid({
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 md:grid-cols-5  gap-4">
         {items.map((item) => (
-          <MovieCard key={item.id} item={item} />
+          <MovieCard key={item.id} item={item} kind={kind} />
         ))}
       </div>
 
@@ -72,4 +74,3 @@ export default function MediaGrid({
     </div>
   );
 }
-

@@ -8,6 +8,7 @@ import MediaPlayer from "@/components/MediaPlayer";
 import WatchLaterButton from "@/components/WatchLaterButton";
 import { MediaItem } from "@/types/tmdb";
 import CollapsibleOverview from "@/components/CollapsibleOverview";
+import Recommendations from "@/components/Recommendations";
 
 interface TVDetails {
   id: number;
@@ -191,7 +192,7 @@ export default function TVDetailsPage({
     );
   }
 
-  const displayName = tvShow.original_name || tvShow.name;
+  const displayName = tvShow.name;
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -389,6 +390,15 @@ export default function TVDetailsPage({
                 </div>
               ) : null;
             })()}
+
+          {/* Recommendations */}
+          {tvShow && tvId && (
+            <Recommendations
+              kind="tv"
+              query={`${tvShow.name} (${new Date(tvShow.first_air_date).getFullYear()})`}
+              tmdbId={tvId}
+            />
+          )}
         </div>
       </div>
     </div>

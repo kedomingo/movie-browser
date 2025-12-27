@@ -8,14 +8,20 @@ import { slugify } from "@/lib/utils";
 
 interface MovieCardProps {
   item: MediaItem;
+  kind?: "movie" | "tv";
 }
 
-export default function MovieCard({ item }: MovieCardProps) {
+export default function MovieCard({ item, kind }: MovieCardProps) {
   const router = useRouter();
   const title = "title" in item ? item.title : item.name;
+
+  if (typeof title === "undefined") {
+    return "problem" + JSON.stringify(item);
+  }
+
   const date = "release_date" in item ? item.release_date : item.first_air_date;
   const year = date ? new Date(date).getFullYear() : "N/A";
-  const mediaType = "title" in item ? "movie" : "tv";
+  const mediaType = kind ?? ("title" in item ? "movie" : "tv");
   const voteAverage = item.vote_average?.toFixed(1) || "N/A";
   const slug = slugify(title);
 
@@ -39,7 +45,9 @@ export default function MovieCard({ item }: MovieCardProps) {
           {title}
         </h3>
         <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-400">{year} ({item.original_language})</p>
+          <p className="text-xs text-gray-400">
+            {year} ({item.original_language})
+          </p>
           <div className="flex items-center gap-1">
             <span className="text-xs text-yellow-400">★</span>
             <span className="text-xs text-gray-300">{voteAverage}</span>
@@ -49,4 +57,3 @@ export default function MovieCard({ item }: MovieCardProps) {
     </div>
   );
 }
-

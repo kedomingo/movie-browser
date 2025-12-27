@@ -5,6 +5,7 @@ import MediaPlayer from "@/components/MediaPlayer";
 import MovieTitleWithWatchLater from "@/components/MovieTitleWithWatchLater";
 import CollapsibleOverview from "@/components/CollapsibleOverview";
 import CollapsibleCast from "@/components/CollapsibleCast";
+import Recommendations from "@/components/Recommendations";
 
 interface CastMember {
   adult: boolean;
@@ -24,6 +25,7 @@ interface CastMember {
 export interface MovieDetails {
   id: number;
   original_title: string;
+  title: string;
   overview: string;
   poster_path?: string | null;
   backdrop_path: string | null;
@@ -86,7 +88,7 @@ export default async function MovieDetailsPage({
         <div className="flex flex-col gap-6">
           {/* Title with Watch Later button */}
           <MovieTitleWithWatchLater
-            title={movie.original_title}
+            title={`${movie.title}${movie.original_title ? ` (${movie.original_title})` : ''}`}
             movie={movie}
           />
 
@@ -132,17 +134,16 @@ export default async function MovieDetailsPage({
               movie.revenue > movie.budget * 4 ? (
                 <>Likely Excellent</>
               ) : (movie.vote_average >= 6 && movie.vote_count >= 100) ||
-              movie.revenue > movie.budget * 2 ? (
+                movie.revenue > movie.budget * 2 ? (
                 <>Potential: Likely good</>
               ) : movie.vote_average < 5 ||
-              movie.vote_count < 100 ||
-              movie.revenue < movie.budget * 2 ? (
+                movie.vote_count < 100 ||
+                movie.revenue < movie.budget * 2 ? (
                 <>Potential: Likely bad</>
               ) : (
                 <></>
               )}
             </div>
-
           </div>
 
           {/* Media Player */}
@@ -154,6 +155,13 @@ export default async function MovieDetailsPage({
 
           {/* Cast Section */}
           {movie.credits?.cast && <CollapsibleCast cast={movie.credits.cast} />}
+
+          {/* Recommendations */}
+          <Recommendations
+            kind="movie"
+            query={`${movie.title} (${new Date(movie.release_date).getFullYear()})`}
+            tmdbId={encryptedId}
+          />
         </div>
       </div>
     </div>

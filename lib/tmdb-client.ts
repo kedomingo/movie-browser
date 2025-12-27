@@ -51,7 +51,7 @@ export function deobfuscateId(encryptedId: string): number {
 }
 
 // Recursively obfuscate IDs in an object
-function obfuscateIdsInObject(obj: any): any {
+export function obfuscateIdsInObject(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map((item) => obfuscateIdsInObject(item));
   }

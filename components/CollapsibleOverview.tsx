@@ -77,7 +77,7 @@ export default function CollapsibleOverview({
               <a
                 target="_blank"
                 className="underline"
-                href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.original_title)}`}
+                href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.title)}`}
               >
                 Rotten tomatoes
               </a>
