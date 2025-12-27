@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
           messages: [
             {
               role: "user",
-              content: `Recommend ${kind === "tv" ? "TV shows" : "Movies"} similar to ${query}. Prioritize thematic similarity before genre. Format output as title,year released with one show per line - nothing else!`,
+              content: `Recommend ${kind === "tv" ? "15 TV shows" : "10 Movies"} similar to ${query}. Prioritize thematic similarity before genre. Format output as title,year released with one show per line - nothing else!`,
             },
           ],
           ...(model === "gpt-4.1-mini" ? {} : { temperature: 0.7 }),
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
     const openaiData = await openaiResponse.json();
     const recommendationsText = openaiData.choices?.[0]?.message?.content || "";
 
-    console.log(recommendationsText);
+    // console.log(recommendationsText);
 
     // Step 2: Parse the OpenAI response
     const recommendations = recommendationsText
@@ -170,6 +170,10 @@ export async function GET(request: NextRequest) {
       .filter((line: string) => line.length > 0)
       .map((line: string) => {
         // Parse "title,year" format
+        if (line.match(/^\d+\. /)) {
+          line = line.replace(/^\d+\. /, "");
+        }
+
         const parts = line.split(",");
         if (parts.length >= 2) {
           const title = parts.slice(0, -1).join(",").trim(); // Handle titles with commas
@@ -191,19 +195,19 @@ export async function GET(request: NextRequest) {
         try {
           const searchParams = new URLSearchParams();
           searchParams.set("query", rec.title);
+          searchParams.set("include_adult", "true");
           if (rec.year) {
             searchParams.set("year", rec.year.toString());
           }
 
-          const response = await fetch(
-            `${TMDB_BASE_URL}/search/${kind}?${searchParams.toString()}`,
-            {
-              headers: {
-                Authorization: `Bearer ${TMDB_API_KEY}`,
-                "Content-Type": "application/json",
-              },
+          const url = `${TMDB_BASE_URL}/search/${kind}?${searchParams.toString()}`;
+          // console.log(url);
+          const response = await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${TMDB_API_KEY}`,
+              "Content-Type": "application/json",
             },
-          );
+          });
 
           if (!response.ok) {
             console.error(
@@ -217,6 +221,11 @@ export async function GET(request: NextRequest) {
           if (data.results && data.results.length > 0) {
             // Return the first result
             return data.results[0];
+          } else {
+            console.error(
+              `TMDB search failed for ${rec.title} ${rec.year}`,
+              response.status,
+            );
           }
           return null;
         } catch (error) {
@@ -227,7 +236,9 @@ export async function GET(request: NextRequest) {
     );
 
     // Filter out null results
-    const validResults = results.filter((result) => result !== null);
+    const validResults = results
+      .filter((result) => result !== null)
+      .slice(0, 10);
 
     // Obfuscate IDs in the results
     const obfuscatedResults = validResults.map((result) =>

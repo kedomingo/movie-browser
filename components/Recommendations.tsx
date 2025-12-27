@@ -88,9 +88,9 @@ export default function Recommendations({
         const data = await response.json();
 
         // Convert TMDB movie results to MediaItem format
-        const mediaItems: MediaItem[] = data.recommendations.map(
+        const allMediaItems: MediaItem[] = data.recommendations.map(
           (movie: any) => ({
-            id: movie.id,
+            id: movie.id as string,
             title: movie.title || movie.original_title || movie.name,
             poster_path: movie.poster_path,
             backdrop_path: movie.backdrop_path,
@@ -102,6 +102,16 @@ export default function Recommendations({
             original_language: movie.original_language || "",
           }),
         );
+
+        // Remove duplicates based on ID
+        const seenIds = new Set<string | number>();
+        const mediaItems: MediaItem[] = allMediaItems.filter((item) => {
+          if (seenIds.has(item.id)) {
+            return false;
+          }
+          seenIds.add(item.id);
+          return true;
+        });
 
         setRecommendations(mediaItems);
       } catch (err) {
