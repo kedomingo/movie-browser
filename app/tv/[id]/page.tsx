@@ -7,6 +7,7 @@ import GenreBadge from "@/components/GenreBadge";
 import MediaPlayer from "@/components/MediaPlayer";
 import WatchLaterButton from "@/components/WatchLaterButton";
 import { MediaItem } from "@/types/tmdb";
+import CollapsibleOverview from "@/components/CollapsibleOverview";
 
 interface TVDetails {
   id: number;
@@ -242,11 +243,7 @@ export default function TVDetailsPage({
           {/* Details */}
           <div className="flex flex-col gap-4">
             {/* Overview */}
-            {tvShow.overview && (
-              <p className="text-lg text-gray-300 leading-relaxed">
-                {tvShow.overview}
-              </p>
-            )}
+            {tvShow.overview && <CollapsibleOverview overview={tvShow.overview} />}
 
             {/* Genres */}
             {tvShow.genres && tvShow.genres.length > 0 && (

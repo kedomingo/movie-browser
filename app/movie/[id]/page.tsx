@@ -3,6 +3,7 @@ import { getBackdropUrl } from "@/lib/tmdb";
 import GenreBadge from "@/components/GenreBadge";
 import MediaPlayer from "@/components/MediaPlayer";
 import MovieTitleWithWatchLater from "@/components/MovieTitleWithWatchLater";
+import CollapsibleOverview from "@/components/CollapsibleOverview";
 
 interface CastMember {
   adult: boolean;
@@ -19,7 +20,7 @@ interface CastMember {
   order: number;
 }
 
-interface MovieDetails {
+export interface MovieDetails {
   id: number;
   original_title: string;
   overview: string;
@@ -91,11 +92,7 @@ export default async function MovieDetailsPage({
           {/* Details */}
           <div className="flex flex-col gap-4">
             {/* Overview */}
-            {movie.overview && (
-              <p className="text-lg text-gray-300 leading-relaxed">
-                {movie.overview}
-              </p>
-            )}
+            {movie.overview && <CollapsibleOverview movie={movie} />}
 
             {/* Genres */}
             {movie.genres && movie.genres.length > 0 && (
@@ -113,30 +110,6 @@ export default async function MovieDetailsPage({
 
             {/* Release date and rating */}
             <div className="flex flex-wrap items-center gap-4 text-gray-300">
-              {movie.release_date && (
-                <div>
-                  <span className="font-semibold">Release Date: </span>
-                  <span>
-                    {new Date(movie.release_date).toLocaleDateString()}
-                  </span>
-                </div>
-              )}
-              {movie.budget > 0 && (
-                <div>
-                  <span className="font-semibold">Budget: </span>
-                  <span>
-                    ${new Intl.NumberFormat("en-US").format(movie.budget)}
-                  </span>
-                </div>
-              )}
-              {movie.revenue > 0 && (
-                <div>
-                  <span className="font-semibold">Revenue: </span>
-                  <span>
-                    ${new Intl.NumberFormat("en-US").format(movie.revenue)}
-                  </span>
-                </div>
-              )}
               {movie.original_language && (
                 <div>
                   <span className="font-semibold">
@@ -151,27 +124,24 @@ export default async function MovieDetailsPage({
                   {movie.vote_average.toFixed(1)} ({movie.vote_count})
                 </span>
               </div>
-            </div>
 
-            <div className="flex gap-4">
               {(movie.vote_average >= 6.5 &&
                 movie.vote_count >= 200 &&
                 movie.revenue > movie.budget * 3) ||
               movie.revenue > movie.budget * 4 ? (
                 <>Likely Excellent</>
               ) : (movie.vote_average >= 6 && movie.vote_count >= 100) ||
-                movie.revenue > movie.budget * 2 ? (
+              movie.revenue > movie.budget * 2 ? (
                 <>Potential: Likely good</>
               ) : movie.vote_average < 5 ||
-                movie.vote_count < 100 ||
-                movie.revenue < movie.budget * 2 ? (
+              movie.vote_count < 100 ||
+              movie.revenue < movie.budget * 2 ? (
                 <>Potential: Likely bad</>
               ) : (
                 <></>
               )}
-
-              <a target="_blank" className="underline" href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.original_title)}`}>Rotten tomatoes</a>
             </div>
+
           </div>
 
           {/* Media Player */}
