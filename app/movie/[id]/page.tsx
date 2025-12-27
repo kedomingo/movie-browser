@@ -87,10 +87,7 @@ export default async function MovieDetailsPage({
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6">
           {/* Title with Watch Later button */}
-          <MovieTitleWithWatchLater
-            title={`${movie.title}${movie.original_title && movie.original_title !== movie.title ? ` (${movie.original_title})` : ''}`}
-            movie={movie}
-          />
+          <MovieTitleWithWatchLater movie={movie} />
 
           {/* Details */}
           <div className="flex flex-col gap-4">

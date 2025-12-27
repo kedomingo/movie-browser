@@ -4,9 +4,9 @@ import { MediaItem } from "@/types/tmdb";
 import WatchLaterButton from "./WatchLaterButton";
 
 interface MovieTitleWithWatchLaterProps {
-  title: string;
   movie: {
     id: number | string;
+    title: string;
     original_title: string;
     poster_path?: string | null;
     backdrop_path: string | null;
@@ -19,13 +19,12 @@ interface MovieTitleWithWatchLaterProps {
 }
 
 export default function MovieTitleWithWatchLater({
-  title,
   movie,
 }: MovieTitleWithWatchLaterProps) {
   // Convert movie details to MediaItem format
   const mediaItem: MediaItem = {
     id: movie.id,
-    title: movie.original_title,
+    title: movie.title,
     poster_path: movie.poster_path || null,
     backdrop_path: movie.backdrop_path,
     overview: movie.overview,
@@ -39,12 +38,14 @@ export default function MovieTitleWithWatchLater({
   return (
     <div className="flex flex-col items-start justify-between gap-4">
       <h1 className="flex-1 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
-        {title}
+        {movie.title}
       </h1>
+      {movie.original_title && movie.original_title !== movie.title && (
+        <h3>{movie.original_title}</h3>
+      )}
       <div className="flex-shrink-0">
         <WatchLaterButton item={mediaItem} />
       </div>
     </div>
   );
 }
-

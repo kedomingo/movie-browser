@@ -229,9 +229,9 @@ export default function TVDetailsPage({
               <h1 className="flex-1 text-4xl font-bold text-white sm:text-5xl md:text-6xl">
                 {displayName}
               </h1>
-              {tvShow.original_name && tvShow.original_name !== null && (
-                <h3>{tvShow.original_name}</h3>
-              )}
+              {tvShow.original_name && tvShow.original_name !== tvShow.name && (
+                  <h3>{tvShow.original_name}</h3>
+                )}
             </div>
             {tvShow && (
               <div className="flex-shrink-0">

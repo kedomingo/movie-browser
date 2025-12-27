@@ -26,7 +26,7 @@ export default function Header({ onClickWatchList, onClickSearch }: Props) {
               <img width="150" src="/logo3.png" alt="Logo" />
             </button>
 
-            <p>because watching should be simple</p>
+            <p className="hidden md:block">because watching should be simple</p>
           </div>
           <div className=" flex items-center justify-end gap-4">
             <button

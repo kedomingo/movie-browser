@@ -189,30 +189,30 @@ export default function Home() {
   };
 
   // Handle watch list view
-  const handleWatchList = () => {
-    const items = getWatchList();
-    // Convert WatchListItem[] to MediaItem[]
-    const mediaItems: MediaItem[] = items.map((item) => {
-      const { addedAt, ...mediaItem } = item;
-      return mediaItem as MediaItem;
-    });
-    setWatchListItems(mediaItems);
-    setViewMode("watchlist");
-    setCurrentPage(1);
-    setTotalPages(1);
-  };
-
-  // Reload watch list when it might have changed (e.g., after adding/removing)
-  useEffect(() => {
-    if (viewMode === "watchlist") {
-      const items = getWatchList();
-      const mediaItems: MediaItem[] = items.map((item) => {
-        const { addedAt, ...mediaItem } = item;
-        return mediaItem as MediaItem;
-      });
-      setWatchListItems(mediaItems);
-    }
-  }, [viewMode]);
+  // const handleWatchList = () => {
+  //   const items = getWatchList();
+  //   // Convert WatchListItem[] to MediaItem[]
+  //   const mediaItems: MediaItem[] = items.map((item) => {
+  //     const { addedAt, ...mediaItem } = item;
+  //     return mediaItem as MediaItem;
+  //   });
+  //   setWatchListItems(mediaItems);
+  //   setViewMode("watchlist");
+  //   setCurrentPage(1);
+  //   setTotalPages(1);
+  // };
+  //
+  // // Reload watch list when it might have changed (e.g., after adding/removing)
+  // useEffect(() => {
+  //   if (viewMode === "watchlist") {
+  //     const items = getWatchList();
+  //     const mediaItems: MediaItem[] = items.map((item) => {
+  //       const { addedAt, ...mediaItem } = item;
+  //       return mediaItem as MediaItem;
+  //     });
+  //     setWatchListItems(mediaItems);
+  //   }
+  // }, [viewMode]);
 
   const currentItems =
     viewMode === "trending"
@@ -229,6 +229,10 @@ export default function Home() {
 
   const [oldViewMode, setOldViewMode] = useState<ViewMode>(viewMode);
   const [isSearch, setSearch] = useState(false);
+  // const watchListItems = getWatchList();
+  useEffect(() => {
+    setWatchListItems(getWatchList());
+  }, []);
 
   return (
     <>
@@ -261,15 +265,19 @@ export default function Home() {
           {/*  </button>*/}
           {/*</div>*/}
 
-          {isSearch && (
-            <div className="mb-6">
-              <SearchComponent
-                onSearch={handleSearch}
-                onReset={handleReset}
-                initialFilters={searchFilters}
-              />
-            </div>
-          )}
+          <div
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              isSearch
+                ? "mb-6 max-h-[2000px] opacity-100"
+                : "mb-0 max-h-0 opacity-0"
+            }`}
+          >
+            <SearchComponent
+              onSearch={handleSearch}
+              onReset={handleReset}
+              initialFilters={searchFilters}
+            />
+          </div>
 
           <div>
             {viewMode === "trending" && (
@@ -279,8 +287,11 @@ export default function Home() {
             )}
             {viewMode === "search" && (
               <h2 className="mb-4 text-xl font-semibold text-gray-200">
-                Search Results - {searchFilters.kind === "tv" ? "TV shows" : "Movies"}
-                {(searchFilters.query ?? '') !== '' ? ` with title "${searchFilters.query}" ` : ''}
+                Search Results -{" "}
+                {searchFilters.kind === "tv" ? "TV shows" : "Movies"}
+                {(searchFilters.query ?? "") !== ""
+                  ? ` with title "${searchFilters.query}" `
+                  : ""}
               </h2>
             )}
             {viewMode === "watchlist" && (
@@ -290,13 +301,37 @@ export default function Home() {
               </h2>
             )}
 
-            <MediaGrid
-              items={currentItems}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              isLoading={viewMode === "watchlist" ? false : isLoading}
-            />
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                viewMode !== "watchlist" ? "opacity-100 relative" : "opacity-0 absolute"
+              }`}
+            >
+              <MediaGrid
+                items={currentItems}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                isLoading={isLoading}
+              />
+            </div>
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                viewMode === "watchlist" ? "opacity-100 relative" : "opacity-0 absolute"
+              }`}
+            >
+              <MediaGrid
+                items={watchListItems}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                isLoading={false}
+              />
+            </div>
+            {/*{viewMode !== "watchlist" && (*/}
+            {/*)}*/}
+
+            {/*{viewMode === "watchlist" && (*/}
+            {/*)}*/}
           </div>
         </div>
       </div>
