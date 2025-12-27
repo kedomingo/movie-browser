@@ -4,6 +4,7 @@ import GenreBadge from "@/components/GenreBadge";
 import MediaPlayer from "@/components/MediaPlayer";
 import MovieTitleWithWatchLater from "@/components/MovieTitleWithWatchLater";
 import CollapsibleOverview from "@/components/CollapsibleOverview";
+import CollapsibleCast from "@/components/CollapsibleCast";
 
 interface CastMember {
   adult: boolean;
@@ -152,56 +153,7 @@ export default async function MovieDetailsPage({
           />
 
           {/* Cast Section */}
-          {movie.credits?.cast && (
-            <div className="mt-8">
-              <h2 className="mb-4 text-2xl font-bold text-white">
-                Top 10 Cast
-              </h2>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-                {movie.credits.cast
-                  .filter(
-                    (member: CastMember) =>
-                      member.known_for_department === "Acting",
-                  )
-                  .slice(0, 10)
-                  .map((member: CastMember) => (
-                    <div
-                      key={member.id}
-                      className="flex flex-col items-center gap-2"
-                    >
-                      <a
-                        target="_blank"
-                        href={`https://www.google.com/search?udm=2&q=${encodeURIComponent(member.name)}`}
-                      >
-                        <div className="relative h-20 w-20 overflow-hidden rounded-full">
-                          {member.profile_path ? (
-                            <Image
-                              src={`https://image.tmdb.org/t/p/w185${member.profile_path}`}
-                              alt={member.name}
-                              fill
-                              className="object-cover"
-                              sizes="64px"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-gray-700 text-gray-400">
-                              <span className="text-xs">No Photo</span>
-                            </div>
-                          )}
-                        </div>
-                      </a>
-                      <div className="text-center">
-                        <p className="text-sm font-semibold text-white">
-                          {member.name}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {member.character}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
+          {movie.credits?.cast && <CollapsibleCast cast={movie.credits.cast} />}
         </div>
       </div>
     </div>

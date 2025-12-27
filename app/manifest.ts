@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Pira Movies",
+    name: "PiraTV",
     short_name: "Pira",
     description: "Watch movies and TV shows",
     start_url: "/",

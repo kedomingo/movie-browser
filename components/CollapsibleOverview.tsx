@@ -1,65 +1,94 @@
 "use client";
 
 import { MovieDetails } from "@/app/movie/[id]/page";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+interface TVDetails {
+  overview: string;
+  name?: string;
+  original_name?: string;
+}
 
 interface CollapsibleOverviewProps {
-  movie: MovieDetails;
+  movie?: MovieDetails;
+  tv?: TVDetails;
 }
 
 export default function CollapsibleOverview({
   movie,
+  tv,
 }: CollapsibleOverviewProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint in Tailwind
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Determine which type we're dealing with
+  const isMovie = !!movie;
+  const overview = movie?.overview || tv?.overview || "";
+  const title = movie?.original_title || tv?.name || tv?.original_name || "";
 
   return (
     <div className="relative">
       <div
         className={`relative overflow-hidden transition-all duration-300 ${
-          isExpanded ? "max-h-none" : "max-h-[3.5rem]"
+          !isMobile || isExpanded ? "max-h-none" : "max-h-[3.5rem]"
         }`}
       >
         <div className="flex flex-col gap-2">
-          <p className="text-lg text-gray-300 leading-relaxed">
-            {movie.overview}
-          </p>
+          <p className="text-lg text-gray-300 leading-relaxed">{overview}</p>
 
-          {movie.release_date && (
-            <div>
-              <span className="font-semibold">Release Date: </span>
-              <span>{new Date(movie.release_date).toLocaleDateString()}</span>
-            </div>
-          )}
-          {movie.budget > 0 && (
-            <div>
-              <span className="font-semibold">Budget: </span>
-              <span>
-                ${new Intl.NumberFormat("en-US").format(movie.budget)}
-              </span>
-            </div>
-          )}
-          {movie.revenue > 0 && (
-            <div>
-              <span className="font-semibold">Revenue: </span>
-              <span>
-                ${new Intl.NumberFormat("en-US").format(movie.revenue)}
-              </span>
-            </div>
-          )}
+          {isMovie && movie && (
+            <>
+              {movie.release_date && (
+                <div>
+                  <span className="font-semibold">Release Date: </span>
+                  <span>
+                    {new Date(movie.release_date).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {movie.budget > 0 && (
+                <div>
+                  <span className="font-semibold">Budget: </span>
+                  <span>
+                    ${new Intl.NumberFormat("en-US").format(movie.budget)}
+                  </span>
+                </div>
+              )}
+              {movie.revenue > 0 && (
+                <div>
+                  <span className="font-semibold">Revenue: </span>
+                  <span>
+                    ${new Intl.NumberFormat("en-US").format(movie.revenue)}
+                  </span>
+                </div>
+              )}
 
-          <a
-            target="_blank"
-            className="underline"
-            href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.original_title)}`}
-          >
-            Rotten tomatoes
-          </a>
+              <a
+                target="_blank"
+                className="underline"
+                href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.original_title)}`}
+              >
+                Rotten tomatoes
+              </a>
+            </>
+          )}
         </div>
-        {!isExpanded && (
+        {isMobile && !isExpanded && (
           <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent pointer-events-none" />
         )}
       </div>
-      {!isExpanded && (
+      {isMobile && !isExpanded && (
         <div className="mt-2 flex items-center justify-center">
           <button
             onClick={() => setIsExpanded(true)}
@@ -69,7 +98,7 @@ export default function CollapsibleOverview({
           </button>
         </div>
       )}
-      {isExpanded && (
+      {isMobile && isExpanded && (
         <div className="mt-2 flex items-center justify-center">
           <button
             onClick={() => setIsExpanded(false)}

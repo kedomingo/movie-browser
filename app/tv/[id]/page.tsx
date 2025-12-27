@@ -243,7 +243,15 @@ export default function TVDetailsPage({
           {/* Details */}
           <div className="flex flex-col gap-4">
             {/* Overview */}
-            {tvShow.overview && <CollapsibleOverview overview={tvShow.overview} />}
+            {tvShow.overview && (
+              <CollapsibleOverview
+                tv={{
+                  overview: tvShow.overview,
+                  name: tvShow.name,
+                  original_name: tvShow.original_name,
+                }}
+              />
+            )}
 
             {/* Genres */}
             {tvShow.genres && tvShow.genres.length > 0 && (

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pira Movies",
+  title: "PiraTV Watch Movies and TV",
   description: "Watch movies and TV shows",
   manifest: "/manifest.webmanifest",
 };
@@ -53,7 +53,7 @@ export default function RootLayout({
         </Suspense>
         <InstallButton />
         <div className="flex items-center justify-center w-full p-16">
-            Pira Movies
+            PiraTV Watch Movies and TV
         </div>
 
       </body>
