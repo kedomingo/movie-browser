@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import InstallButton from "@/components/InstallButton";
 import Header from "@/components/Header";
 import "./globals.css";
@@ -56,6 +57,7 @@ export default function RootLayout({
         >
           {children}
         </Suspense>
+        <Analytics />
         <div className="relative z-20 flex flex-col items-center justify-center w-full p-16 gap-4">
           <p>PiraTV Watch Movies and TV - All content is provided by external third-party providers</p>
 
